@@ -2187,25 +2187,27 @@ local keySystems={}
 local keySystemCount=0
 local function createV3KeyStorage(options, storeId)
     if options.Storage then return options.Storage end
-    local path = "R1nHUb/Key/key.txt"
+    local encoded = storeId:gsub(".",function(character) return string.format("%02x",string.byte(character)) end)
+    local path = options.StorageFile or ("R1nUIv3-Key-"..encoded..".json")
+    local Http = game:GetService("HttpService")
     return {
         Read = function()
             if type(readfile) ~= "function" then return nil end
             local ok, text = pcall(readfile,path)
             if not ok then return nil end
-            if type(text) ~= "string" or text == "" then return nil end
+            local parsed, record = pcall(Http.JSONDecode,Http,text)
+            if not parsed or type(record) ~= "table" then return nil end
             return {
-                SaveKey=true,
-                AutoLoad=true,
-                Key=text,
+                SaveKey=record.SaveKey==true,
+                AutoLoad=record.AutoLoad==true,
+                Key=record.SaveKey==true and type(record.Key)=="string" and record.Key or nil,
             }
         end,
         Write = function(record)
             if type(writefile) ~= "function" then error("Local key storage is unavailable.") end
-            for _, folder in ipairs({"R1nHUb", "R1nHUb/Key"}) do
-                if type(isfolder) == "function" and not isfolder(folder) and type(makefolder) == "function" then makefolder(folder) end
-            end
-            writefile(path,record.SaveKey==true and type(record.Key)=="string" and record.Key or "")
+            local saved = {SaveKey=record.SaveKey==true,AutoLoad=record.AutoLoad==true}
+            if saved.SaveKey and type(record.Key)=="string" then saved.Key=record.Key end
+            writefile(path,Http:JSONEncode(saved))
         end,
     }
 end
