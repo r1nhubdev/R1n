@@ -1,4 +1,4 @@
-local scripts = {}
+local scripts = {[2753915549] = "7ffba6e56861496f9d884a4a2563ffcd"}
 local id = scripts[game.PlaceId] or "90695fb80ef865532c9fcf700d589141"
 local env = (getgenv and getgenv()) or _G
 local sdk = loadstring(game:HttpGet("https://sdkapi-public.luarmor.net/library.lua"))()
