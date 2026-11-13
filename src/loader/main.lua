@@ -3,7 +3,7 @@ local id=scripts[game.PlaceId] or "90695fb80ef865532c9fcf700d589141"
 local env=(getgenv and getgenv()) or _G
 local sdk=loadstring(game:HttpGet("https://sdkapi-public.luarmor.net/library.lua"))()
 sdk.script_id=id
-local ui=loadstring(game:HttpGet("https://raw.githubusercontent.com/r1nhubdev/R1n/refs/heads/main/src/loader/ui-v3.luau"))()
+local ui=loadstring(game:HttpGet("https://raw.githubusercontent.com/r1nhubdev/R1n/refs/heads/main/src/loader/ui-v3.luau?v=lowyx-getkey-2"))()
 local function accept(key)
     if type(key)~="string" or not key:match("^[A-Za-z0-9]+$") or #key~=32 then
         return false,"Enter a valid 32-character key."
