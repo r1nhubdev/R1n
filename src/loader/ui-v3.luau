@@ -7391,8 +7391,14 @@ makeComponent = function(body, props, prefix)
 end
 function api:CreateWindow(options)
     options = options or {}
-    Configuration.Title = options.Title or "Lowyx Hub"
-    Configuration.Description = options.Description or (options.Name or "Roblox Game"):gsub("^R1n Hub%s*|%s*", "")
+    local games = {[994732206] = "Blox Fruits", [7633926880] = "BloxStrike", [9867225552] = "A Bizarre Run"}
+    local name = (options.Name or ""):gsub("^R1n Hub%s*|?%s*", ""):gsub("^Lowyx Hub%s*|?%s*", "")
+    local description = options.Description or options.Subtitle
+    if not description or description == "R1n Hub" or description == "Lowyx Hub" then
+        description = games[game.GameId] or (name ~= "" and name) or "Roblox Game"
+    end
+    Configuration.Title = (options.Title or "Lowyx Hub"):gsub("R1n Hub", "Lowyx Hub")
+    Configuration.Description = description
     objects[6].Text, objects[7].Text = Configuration.Title, Configuration.Description
     api.Window:SetAttribute("LowyxUI", true)
     return api
