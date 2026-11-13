@@ -7531,22 +7531,12 @@ function api:CreateKeySystem(options)
             if options.CloseOnSuccess ~= false then controller:Destroy() end
         end
     end})
-    local getKey = section:AddButton({Id = "GetKey", Name = "Get Key", Callback = function()
-        if options.OnGetKey then
+    if options.OnGetKey then
+        section:AddButton({Id = "GetKey", Name = "Get Key", Callback = function()
             local ok, message = pcall(options.OnGetKey)
             if ok and message then controller:SetStatus(message) end
-            return
-        end
-        local link = options.KeyURL or "https://discord.gg/lowyx"
-        if type(setclipboard) == "function" and pcall(setclipboard, link) then
-            controller:SetStatus("Discord link copied: " .. link)
-        else
-            controller:SetStatus("Get your key: " .. link)
-        end
-    end})
-    getKey.Instance.LayoutOrder = 5
-    section.Instance.AutomaticSize = Enum.AutomaticSize.None
-    section.Instance.Size = UDim2.new(1, -4, 0, 260)
+        end})
+    end
     return controller
 end
 function api.Show()
