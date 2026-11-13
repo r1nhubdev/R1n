@@ -1,4 +1,3 @@
-
 local Library = {Version = "Lowyx-1", SingleFile = true}
 local function installEmbeddedAssets()
     if type(writefile) ~= "function" or type(getcustomasset) ~= "function" then return end
