@@ -16,7 +16,7 @@ local function accept(key)
 end
 ui:CreateKeySystem({
     Title="Lowyx Hub | Key System",Placeholder="Enter your Luarmor key...",
-    CloseOnSuccess=true,
+    CloseOnSuccess=true,KeyURL="https://discord.gg/lowyx",
     Verify=accept,
     OnGetKey=function()
         local link="https://discord.gg/lowyx"
