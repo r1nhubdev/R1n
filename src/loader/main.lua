@@ -18,12 +18,20 @@ ui:CreateKeySystem({
     Title="Lowyx Hub | Key System",Placeholder="Enter your Luarmor key...",
     CloseOnSuccess=true,
     Verify=accept,
+    OnGetKey=function()
+        local link="https://discord.gg/lowyx"
+        if type(setclipboard)=="function" then
+            local ok=pcall(setclipboard,link)
+            if ok then return "Discord link copied: "..link end
+        end
+        return "Get your key: "..link
+    end,
     OnSuccess=function(key)
         env.script_key=key
         script_key=key
         task.spawn(function()
             local ok,err=pcall(sdk.load_script)
-            if not ok then warn("R1n Hub: script startup failed: "..tostring(err)) end
+            if not ok then warn("Lowyx Hub: script startup failed: "..tostring(err)) end
         end)
     end,
 })
