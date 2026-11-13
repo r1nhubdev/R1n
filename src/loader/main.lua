@@ -1,5 +1,5 @@
-local scripts = {[2753915549] = "7ffba6e56861496f9d884a4a2563ffcd"}
-local universes = {[994732206] = "7ffba6e56861496f9d884a4a2563ffcd"}
+local scripts = {[2753915549] = "7ffba6e56861496f9d884a4a2563ffcd", [114234929420007] = "90695fb80ef865532c9fcf700d589141"}
+local universes = {[994732206] = "7ffba6e56861496f9d884a4a2563ffcd", [7633926880] = "90695fb80ef865532c9fcf700d589141"}
 local id = universes[game.GameId] or scripts[game.PlaceId]
 if not id then
     warn("Lowyx Hub: this game is not supported.")
