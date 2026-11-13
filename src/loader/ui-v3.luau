@@ -7531,7 +7531,7 @@ function api:CreateKeySystem(options)
             if options.CloseOnSuccess ~= false then controller:Destroy() end
         end
     end})
-    section:AddButton({Id = "GetKey", Name = "Get Key", Callback = function()
+    local getKey = section:AddButton({Id = "GetKey", Name = "Get Key", Callback = function()
         if options.OnGetKey then
             local ok, message = pcall(options.OnGetKey)
             if ok and message then controller:SetStatus(message) end
@@ -7544,6 +7544,9 @@ function api:CreateKeySystem(options)
             controller:SetStatus("Get your key: " .. link)
         end
     end})
+    getKey.Instance.LayoutOrder = 5
+    section.Instance.AutomaticSize = Enum.AutomaticSize.None
+    section.Instance.Size = UDim2.new(1, -4, 0, 260)
     return controller
 end
 function api.Show()
