@@ -4157,11 +4157,20 @@ while not player do
     player = Players.LocalPlayer
 end
 local playerGui = player:WaitForChild("PlayerGui")
-for _, existing in playerGui:GetChildren() do
-    if existing:IsA("ScreenGui") and existing:GetAttribute("LowyxStudioLocalUI") == true then
-        existing:Destroy()
+local guiParent = playerGui
+pcall(function()
+    local parent = type(gethui) == "function" and gethui() or game:GetService("CoreGui")
+    if typeof(parent) == "Instance" then guiParent = parent end
+end)
+local function removeExisting(parent)
+    for _, existing in parent:GetChildren() do
+        if existing:IsA("ScreenGui") and existing:GetAttribute("LowyxStudioLocalUI") == true then
+            existing:Destroy()
+        end
     end
 end
+pcall(removeExisting, playerGui)
+if guiParent ~= playerGui then pcall(removeExisting, guiParent) end
 
 local objects: { [number]: any } = {}
 objects[1] = Instance.new("ScreenGui")
@@ -4172,7 +4181,7 @@ objects[5] = Instance.new("UIGradient")
 objects[6] = Instance.new("TextLabel")
 objects[7] = Instance.new("TextLabel")
 objects[8] = Instance.new("ImageLabel")
-objects[1].Name = "ScreenGui"
+objects[1].Name = "LowyxHub"
 objects[1].Archivable = true
 objects[1].Enabled = true
 objects[1].DisplayOrder = 2147483647
@@ -4333,7 +4342,8 @@ objects[8].Parent = objects[2]
 local gui = objects[1]
 objects[8].ImageTransparency = 1
 gui:SetAttribute("LowyxStudioLocalUI", true)
-gui.Parent = playerGui
+local mounted = pcall(function() gui.Parent = guiParent end)
+if not mounted then gui.Parent = playerGui end
 gui.AutoLocalize = false
 gui.DescendantAdded:Connect(function(item)
     if item:IsA("GuiObject") then item.AutoLocalize = false end
