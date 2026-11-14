@@ -31,12 +31,16 @@ local function accept(key)
     if status.code == "KEY_HWID_LOCKED" then return false,"Key linked to another device. Reset HWID in Discord." end
     return false, type(status.message) == "string" and status.message or "Invalid key.", status.code == "KEY_INCORRECT" or status.code == "KEY_INVALID" or status.code == "KEY_EXPIRED" or status.code == "KEY_BANNED"
 end
-local function start(key)
+local function start(key, remember)
     env.script_key = key
     script_key = key
     task.spawn(function()
-        local loaded = pcall(sdk.load_script)
-        if not loaded then warn("Lowyx Hub: script startup failed. Try again.") end
+        local loaded, result = pcall(sdk.load_script)
+        if not loaded or result == false then
+            warn("Lowyx Hub: script startup failed. Try again.")
+            return
+        end
+        if remember then save(key) end
     end)
 end
 local message = "Enter your key to continue."
@@ -76,8 +80,7 @@ section:AddButton({Id = "Verify", Name = "Verify Key", Callback = function()
     if not ok then busy = false;status:SetDescription("Verification failed. Try again.");return end
     status:SetDescription(message or (accepted and "Key accepted." or "Invalid key."))
     if not accepted then busy = false;return end
-    save(key)
-    start(key)
+    start(key, true)
     ui:Destroy()
 end})
 section:AddButton({Id = "GetKey", Name = "Get Key", Callback = function()
