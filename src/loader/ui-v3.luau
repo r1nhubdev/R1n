@@ -4157,6 +4157,9 @@ while not player do
     player = Players.LocalPlayer
 end
 local playerGui = player:WaitForChild("PlayerGui")
+local function uiAccess()
+    if type(setthreadidentity) == "function" then setthreadidentity(8) end
+end
 local guiParent = playerGui
 pcall(function()
     local parent = type(gethui) == "function" and gethui() or game:GetService("CoreGui")
@@ -7234,6 +7237,7 @@ makeComponent = function(body, props, prefix)
         return native.Get and native.Get() or value
     end
     function handle:Set(nextValue, silent)
+        uiAccess()
         if kind == "Paragraph" then return self:SetDescription(nextValue) end
         muted = silent == true
         if native.Set then native.Set(nextValue, muted) end
@@ -7250,6 +7254,7 @@ makeComponent = function(body, props, prefix)
         return self
     end
     function handle:SetOptions(values)
+        uiAccess()
         props.Options = values
         renderProps.Options = values
         if native.Refresh then native.Refresh(values) end
@@ -7257,6 +7262,7 @@ makeComponent = function(body, props, prefix)
     end
     handle.Refresh = handle.SetOptions
     function handle:SetDescription(text)
+        uiAccess()
         props.Description = tostring(text or "")
         renderProps.Description = props.Description
         if native.SetDescription then
@@ -7268,6 +7274,7 @@ makeComponent = function(body, props, prefix)
         return self
     end
     function handle:SetName(text)
+        uiAccess()
         props.Name, props.Title = tostring(text), tostring(text)
         if native.SetTitle then
             native.SetTitle(props.Title)
@@ -7280,6 +7287,7 @@ makeComponent = function(body, props, prefix)
     handle.SetTitle = handle.SetName
     function handle:GetColor() return color end
     function handle:SetColor(nextColor)
+        uiAccess()
         if typeof(nextColor) ~= "Color3" then return self end
         color = nextColor
         props.Color = color
@@ -7289,6 +7297,7 @@ makeComponent = function(body, props, prefix)
         return self
     end
     function handle:Destroy()
+        uiAccess()
         if native.Destroy then native.Destroy() else row:Destroy() end
         api.Components[prefix] = nil
     end
@@ -7400,6 +7409,7 @@ makeComponent = function(body, props, prefix)
     return handle
 end
 function api:CreateWindow(options)
+    uiAccess()
     options = options or {}
     local games = {[994732206] = "Blox Fruits", [7633926880] = "BloxStrike", [9867225552] = "A Bizarre Run"}
     local name = (options.Name or ""):gsub("^R1n Hub%s*|?%s*", ""):gsub("^Lowyx Hub%s*|?%s*", "")
