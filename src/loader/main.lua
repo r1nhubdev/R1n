@@ -10,9 +10,12 @@ local sdk = loadstring(game:HttpGet("https://sdkapi-public.luarmor.net/library.l
 sdk.script_id = id
 local cache = "lowyx-key.txt"
 local function save(key)
-    if type(writefile) == "function" then
-        pcall(writefile, cache, key)
-    end
+    if type(writefile) ~= "function" then return false end
+    local written = pcall(writefile, cache, key)
+    if not written then return false end
+    if type(readfile) ~= "function" then return true end
+    local read, saved = pcall(readfile, cache)
+    return read and saved == key
 end
 local function clear()
     if type(delfile) == "function" then
@@ -34,13 +37,15 @@ end
 local function start(key, remember)
     env.script_key = key
     script_key = key
+    if remember and not save(key) then
+        warn("Lowyx Hub: this executor could not save the key. You may need to enter it again.")
+    end
     task.spawn(function()
         local loaded, result = pcall(sdk.load_script)
         if not loaded or result == false then
             warn("Lowyx Hub: script startup failed. Try again.")
             return
         end
-        if remember then save(key) end
     end)
 end
 local message = "Enter your key to continue."
