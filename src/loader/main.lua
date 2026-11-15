@@ -31,7 +31,9 @@ local function accept(key)
     local ok, status = pcall(sdk.check_key, key)
     if not ok or type(status) ~= "table" then return false,"Key service unavailable. Try again." end
     if status.code == "KEY_VALID" then return true,"Key verified. Starting script..." end
-    if status.code == "KEY_HWID_LOCKED" then return false,"Key linked to another device. Reset HWID in Discord." end
+    if status.code == "KEY_HWID_LOCKED" then
+        return false,"This key is linked to another executor or device. Free key: reset HWID on the original ad key page. Premium key: reset HWID in Discord.",false,"KEY_HWID_LOCKED"
+    end
     return false, type(status.message) == "string" and status.message or "Invalid key.", status.code == "KEY_INCORRECT" or status.code == "KEY_INVALID" or status.code == "KEY_EXPIRED" or status.code == "KEY_BANNED"
 end
 local function start(key, remember)
@@ -53,13 +55,15 @@ if type(readfile) == "function" then
     local read, key = pcall(readfile, cache)
     if read and type(key) == "string" and key ~= "" then
         key = key:match("^%s*(.-)%s*$")
-        local checked, accepted, result, invalid = pcall(accept, key)
+        local checked, accepted, result, invalid, code = pcall(accept, key)
         if checked and accepted then
             start(key)
             return
         end
         if checked then
-            message = result or "Enter a new key to continue."
+            message = code == "KEY_HWID_LOCKED"
+                and "The saved key belongs to another executor or device. Enter your newly obtained key below."
+                or result or "Enter a new key to continue."
             if invalid then clear() end
         else
             message = "Verification failed. Try again."
