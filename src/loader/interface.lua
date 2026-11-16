@@ -7117,7 +7117,7 @@ local function createInput(parent, options)
         if not silent and options.Callback then options.Callback(value) end
     end
     table.insert(dragConnections, field.FocusLost:Connect(function() set(field.Text) end))
-    return {Row = row, Get = function() return value end, Set = set, Destroy = function() row:Destroy() end}
+    return {Row = row, Get = function() return field.Text end, Set = set, Destroy = function() row:Destroy() end}
 end
 
 local api: any = {Gui = gui, Window = window, FloatingGui = floatingGui, FloatingToggle = floatingButton,

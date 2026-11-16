@@ -24,6 +24,12 @@ local function clear()
         pcall(writefile, cache, "")
     end
 end
+local function normalize(key)
+    if type(key) ~= "string" then return nil end
+    key = key:gsub("\194\160", ""):gsub("\239\187\191", "")
+    key = key:gsub("\226\128[\139-\141]", ""):gsub("%s+", "")
+    return key
+end
 local function accept(key)
     if type(key) ~= "string" or not key:match("^[A-Za-z0-9]+$") or #key ~= 32 then
         return false,"Enter a valid 32-character key.",true
@@ -34,7 +40,14 @@ local function accept(key)
     if status.code == "KEY_HWID_LOCKED" then
         return false,"This key is linked to another executor or device. Free key: reset HWID on the original ad key page. Premium key: reset HWID in Discord.",false,"KEY_HWID_LOCKED"
     end
-    return false, type(status.message) == "string" and status.message or "Invalid key.", status.code == "KEY_INCORRECT" or status.code == "KEY_INVALID" or status.code == "KEY_EXPIRED" or status.code == "KEY_BANNED"
+    local messages = {
+        KEY_INCORRECT = "Luarmor could not find this key. Copy the complete key from the Lowyx key page and try again. [KEY_INCORRECT]",
+        KEY_INVALID = "Enter the complete 32-character key. [KEY_INVALID]",
+        KEY_EXPIRED = "This key has expired. Get a new key and enter it below. [KEY_EXPIRED]",
+        KEY_BANNED = "This key is blocked. Contact support. [KEY_BANNED]",
+    }
+    return false, messages[status.code] or (type(status.message) == "string" and status.message or "Key verification failed."),
+        status.code == "KEY_INCORRECT" or status.code == "KEY_INVALID" or status.code == "KEY_EXPIRED" or status.code == "KEY_BANNED", status.code
 end
 local function start(key, remember)
     env.script_key = key
@@ -54,7 +67,7 @@ local message = "Enter your key to continue."
 if type(readfile) == "function" then
     local read, key = pcall(readfile, cache)
     if read and type(key) == "string" and key ~= "" then
-        key = key:match("^%s*(.-)%s*$")
+        key = normalize(key)
         local checked, accepted, result, invalid, code = pcall(accept, key)
         if checked and accepted then
             start(key)
@@ -64,7 +77,10 @@ if type(readfile) == "function" then
             message = code == "KEY_HWID_LOCKED"
                 and "The saved key belongs to another executor or device. Enter your newly obtained key below."
                 or result or "Enter a new key to continue."
-            if invalid then clear() end
+            if invalid then
+                clear()
+                message = "Your saved key is no longer valid. Paste a newly obtained key below and click Verify Key."
+            end
         else
             message = "Verification failed. Try again."
         end
@@ -83,8 +99,7 @@ section:AddButton({Id = "Verify", Name = "Verify Key", Callback = function()
     end
     busy = true
     status:SetDescription("Verifying...")
-    local key = input:Get()
-    if type(key) == "string" then key = key:match("^%s*(.-)%s*$") end
+    local key = normalize(input:Get())
     local ok, accepted, message = pcall(accept, key)
     if not ok then busy = false;status:SetDescription("Verification failed. Try again.");return end
     status:SetDescription(message or (accepted and "Key accepted." or "Invalid key."))
