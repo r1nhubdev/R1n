@@ -1,3 +1,23 @@
+local refreshed = ...
+if refreshed ~= "LowyxFresh" then
+    local globals = (getgenv and getgenv()) or _G
+    local synApi, httpApi = rawget(globals, "syn"), rawget(globals, "http")
+    local send = request or http_request or (synApi and synApi.request) or (httpApi and httpApi.request)
+    local url = "https://raw.githubusercontent.com/r1nhubdev/R1n/refs/heads/main/src/loader/main.lua?lowyx=" .. tostring(os.time())
+    local ok, source = pcall(function()
+        if type(send) == "function" then
+            local response = send({Url = url, Method = "GET", Headers = {["Cache-Control"] = "no-cache"}})
+            if type(response) == "table" and tonumber(response.StatusCode) == 200 and type(response.Body) == "string" then
+                return response.Body
+            end
+        end
+        return game:HttpGet(url)
+    end)
+    if ok and type(source) == "string" and source:find("local scripts = ", 1, true) then
+        local compiled = loadstring(source)
+        if compiled then return compiled("LowyxFresh") end
+    end
+end
 local scripts = {[2753915549] = "7ffba6e56861496f9d884a4a2563ffcd", [104067066727140] = "07f307fb9f2cbdfd152567dc3b56fcdf", [114234929420007] = "90695fb80ef865532c9fcf700d589141"}
 local universes = {[994732206] = "7ffba6e56861496f9d884a4a2563ffcd", [7174773198] = "07f307fb9f2cbdfd152567dc3b56fcdf", [7633926880] = "90695fb80ef865532c9fcf700d589141"}
 local premiumScripts = {[104067066727140] = "cd4b1fa92b25e702bb3a6cccb98aa9be"}
@@ -112,7 +132,7 @@ if type(readfile) == "function" then
         end
     end
 end
-local ui = loadstring(game:HttpGet("https://raw.githubusercontent.com/r1nhubdev/R1n/refs/heads/main/src/loader/interface.lua"))()
+local ui = loadstring(game:HttpGet("https://raw.githubusercontent.com/r1nhubdev/R1n/refs/heads/main/src/loader/interface.lua?lowyx=" .. tostring(os.time())))()
 ui:CreateWindow({Title = "Lowyx Hub | Key System", Description = "Key verification"})
 local tab = ui:AddTab({Id = "KeySystem", Title = "Access", Icon = "settings"})
 local section = tab:AddSection({Id = "Verification", Name = "Verification", Column = 1})
