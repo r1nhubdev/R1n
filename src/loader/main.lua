@@ -1,13 +1,19 @@
 local scripts = {[2753915549] = "7ffba6e56861496f9d884a4a2563ffcd", [104067066727140] = "07f307fb9f2cbdfd152567dc3b56fcdf", [114234929420007] = "90695fb80ef865532c9fcf700d589141"}
 local universes = {[994732206] = "7ffba6e56861496f9d884a4a2563ffcd", [7174773198] = "07f307fb9f2cbdfd152567dc3b56fcdf", [7633926880] = "90695fb80ef865532c9fcf700d589141"}
-local id = universes[game.GameId] or scripts[game.PlaceId]
-if not id then
+local premiumScripts = {[104067066727140] = "cd4b1fa92b25e702bb3a6cccb98aa9be"}
+local premiumUniverses = {[7174773198] = "cd4b1fa92b25e702bb3a6cccb98aa9be"}
+local ids = {}
+local freeId = universes[game.GameId] or scripts[game.PlaceId]
+local premiumId = premiumUniverses[game.GameId] or premiumScripts[game.PlaceId]
+if freeId then table.insert(ids, freeId) end
+if premiumId and premiumId ~= freeId then table.insert(ids, premiumId) end
+if #ids == 0 then
     warn("Lowyx Hub: this game is not supported.")
     return
 end
 local env = (getgenv and getgenv()) or _G
 local sdk = loadstring(game:HttpGet("https://sdkapi-public.luarmor.net/library.lua"))()
-sdk.script_id = id
+local verifiedId
 local cache = "lowyx-key.txt"
 local function save(key)
     if type(writefile) ~= "function" then return false end
@@ -31,12 +37,29 @@ local function normalize(key)
     return key
 end
 local function accept(key)
+    verifiedId = nil
     if type(key) ~= "string" or not key:match("^[A-Za-z0-9]+$") or #key ~= 32 then
         return false,"Enter a valid 32-character key.",true
     end
-    local ok, status = pcall(sdk.check_key, key)
-    if not ok or type(status) ~= "table" then return false,"Key service unavailable. Try again." end
-    if status.code == "KEY_VALID" then return true,"Key verified. Starting script..." end
+    local status, rank, unavailable = nil, -1, false
+    local invalid = true
+    local ranks = {KEY_INCORRECT = 0, KEY_INVALID = 1, KEY_EXPIRED = 2, KEY_BANNED = 3, KEY_HWID_LOCKED = 4}
+    for _, id in ipairs(ids) do
+        sdk.script_id = id
+        local ok, result = pcall(sdk.check_key, key)
+        if not ok or type(result) ~= "table" or type(result.code) ~= "string" then
+            unavailable, invalid = true, false
+        elseif result.code == "KEY_VALID" then
+            verifiedId = id
+            return true,"Key verified. Starting script..."
+        else
+            local nextRank = ranks[result.code] or 5
+            if nextRank > rank then status, rank = result, nextRank end
+            if result.code ~= "KEY_INCORRECT" and result.code ~= "KEY_INVALID"
+                and result.code ~= "KEY_EXPIRED" and result.code ~= "KEY_BANNED" then invalid = false end
+        end
+    end
+    if unavailable or not status then return false,"Key service unavailable. Try again.",false,"SERVICE_UNAVAILABLE" end
     if status.code == "KEY_HWID_LOCKED" then
         return false,"This key is linked to another executor or device. Free key: reset HWID on the original ad key page. Premium key: reset HWID in Discord.",false,"KEY_HWID_LOCKED"
     end
@@ -47,15 +70,18 @@ local function accept(key)
         KEY_BANNED = "This key is blocked. Contact support. [KEY_BANNED]",
     }
     return false, messages[status.code] or (type(status.message) == "string" and status.message or "Key verification failed."),
-        status.code == "KEY_INCORRECT" or status.code == "KEY_INVALID" or status.code == "KEY_EXPIRED" or status.code == "KEY_BANNED", status.code
+        invalid, status.code
 end
 local function start(key, remember)
+    local id = verifiedId
+    if not id then return end
     env.script_key = key
     script_key = key
     if remember and not save(key) then
         warn("Lowyx Hub: this executor could not save the key. You may need to enter it again.")
     end
     task.spawn(function()
+        sdk.script_id = id
         local loaded, result = pcall(sdk.load_script)
         if not loaded or result == false then
             warn("Lowyx Hub: script startup failed. Try again.")
