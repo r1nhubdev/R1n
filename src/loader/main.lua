@@ -18,9 +18,9 @@ if refreshed ~= "LowyxFresh" then
         if compiled then return compiled("LowyxFresh") end
     end
 end
-local scripts = {[2753915549] = "7ffba6e56861496f9d884a4a2563ffcd", [104067066727140] = "07f307fb9f2cbdfd152567dc3b56fcdf", [114234929420007] = "90695fb80ef865532c9fcf700d589141"}
+local scripts = {[2753915549] = "7ffba6e56861496f9d884a4a2563ffcd", [75378822052755] = "07f307fb9f2cbdfd152567dc3b56fcdf", [104067066727140] = "07f307fb9f2cbdfd152567dc3b56fcdf", [114234929420007] = "90695fb80ef865532c9fcf700d589141", [133155692415120] = "07f307fb9f2cbdfd152567dc3b56fcdf"}
 local universes = {[994732206] = "7ffba6e56861496f9d884a4a2563ffcd", [7174773198] = "07f307fb9f2cbdfd152567dc3b56fcdf", [7633926880] = "90695fb80ef865532c9fcf700d589141"}
-local premiumScripts = {[104067066727140] = "cd4b1fa92b25e702bb3a6cccb98aa9be"}
+local premiumScripts = {[75378822052755] = "cd4b1fa92b25e702bb3a6cccb98aa9be", [104067066727140] = "cd4b1fa92b25e702bb3a6cccb98aa9be", [133155692415120] = "cd4b1fa92b25e702bb3a6cccb98aa9be"}
 local premiumUniverses = {[7174773198] = "cd4b1fa92b25e702bb3a6cccb98aa9be"}
 local ids = {}
 local freeId = universes[game.GameId] or scripts[game.PlaceId]
