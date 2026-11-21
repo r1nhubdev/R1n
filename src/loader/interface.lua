@@ -24,7 +24,7 @@ local function installEmbeddedAssets()
         return table.concat(output)
     end
     if type(makefolder) == "function" then
-        for _, path in {"Lowyx", "Lowyx/Embedded", "Lowyx/Embedded/v1"} do pcall(makefolder, path) end
+        for _, path in {"Lowyx", "Lowyx/Embedded", "Lowyx/Embedded/v1", "Lowyx/Embedded/v2"} do pcall(makefolder, path) end
     end
     local assets = {
         ["Lowyx/Embedded/v1/Logo.png"] = {
@@ -367,7 +367,59 @@ local function installEmbeddedAssets()
             "FrYdAWjbXokAcO1fr80SAeAKIPgQgHq9L3EVYMUOB2unqp1tTA8Q3EbGE8DaPLz1AYxJWqjbuweoMQBnvjJGRO7e+kBquBJocghQ1StV9eQf0iN022j5HkBaLeu92DeJazIkANXfBvZ74arqCyR2ROSXxLMZbgh4iS+RUlV/RMr8IGIA5pgfBA9AwPnBZEgAmn4OoDHmB8wBFtHA84OwQ8BLNOD9AwIQe35AAILPDwhA9PkBQ0D784OuIlsEIMD8oPOJLj1A8PlB008D1zg/OJRKvVvw+aAKVK2z/xXSvHBGkwHAK8zsc/odfo2rph4RgCWZmT8fOanoOcl914cEIFNaIHtSYWm8zlIxBGC5cb65STEBCDDOdyEAbYzzvRGANsb53giAtD/OD7kT6HXqI4zzNw3XQey8mRe2Bwg0zt92fRguABHH+S5hAhB5nB8SgNHudtVjnPdfDdPwkQKQxvno+xtchRsC0jjvDU+N44GXgTWuB/gkIn9o/DwUiWoc",
             "RaIgQxeFNrcWPpD7EgGocR6AzKu4nAAU26cWdQag6nsBwU0XfYEeoG0Ln+YSgOA9QO62cbOcytMYlQdVLbJfQIiFIQ3KarPcAPwcdiwYawDYOTT4/sFZPUDaeuxHkcPCOlznbh697O7h/pQN47fvFU1yvphdICIlqpaqGJGd5zb+Uj3AnJnd5m5LirW7S3WMsvUpEePLrHhCOD53fZa4Lx2ANCHcq702TmOuvU0W7RNcrEhUKpLk6+2OKyuZ1poHbwNV7dX4veYAr6y3P0o/tOisSYeiCz28XN1Z34YvFoAXtijz4cH/9svG3ZL/fvAufprWZnjBymJrNIoGYMH6fEmh2H7h9fz9VqAzePrk/fTJ+8fXy1zOjToAA4eXrsuasfyw86rjM68lyKIaAAAAAAAAAAAAAAAAAAAAAAAgpf0DvVsc9lsWQ+cAAAAASUVORK5CYII=",
         },
+        ["Lowyx/Embedded/v2/UI_click.wav"] = {
+            "UklGRpwJAABXQVZFZm10IBAAAAABAAEAIlYAAESsAAACABAAZGF0YXgJAAAAAD0AsgAxAa8CjwObBU4GHAfMCREMkg0/DjYOcBNZFDgUABY3Fi0YTRVhEVYUOxJEC3cNHQe+BkIASP8S+gv5B/iD9YDzt+xM5nDh/N4J27Te6tsy2WXZfNqK2WzgQ91B3xfjGuX26mrvEfNd9Eb3bPy4+eD66P7T/0kDkQT8BfkPAhKOFd0YbBgJGrsYgRtUGjEcSCCeHuYf1B87GDkbwBqnGY8Vag6iDccLVAVzAGn/d/pz9pL36fYK8s3uqeuo7YDpSu3i56Dqrekl6RflOuYu6k/pyObs6rTu4usS8Cnx0fX89Ab0j/TM95L8//sqAQMFmQlfCE4KyQ17EKQR",
+            "CRH+DwIRXBBLD8IOrg5HFCQX8RS8Ed0S5RJtEQoPxwoLDeIN/w0mCl4GOwX8Ae382vtb/db4Hfr/9STy9fD37d7v+e9y7OHupeuD7B7tFuu16UTp4+xI7eLxa/T08gP2Qfjj9kr37/od+qz8Iv37APUCXgX7BcYEhQYtCEUIKwhvCsMOoBFqD0USNBEcEj4TlxL6D2MNoQ+YED8P6Q6aDDUMOQstCjgJDwS7BHoASf/G+x79Tftz+TT63vab9qz37PWS8530zvJR80v0HvPU8AbyWfHI8iLyWPXX9hv4Cven9qP3Fvs5/a3+KACd/gD+/QFuA4EDdQXHBL0Eqgc9B/kIDwibB40J3guPDGALAwygDPQK8wpFCQ4KAgkxCpMK1AjRCDsHewYVBWoD",
+            "pAPhAOH/2P9N/SP7OfvO+fL33vja+Tr4rPeN9r732fYn9yD1l/bm9ZL1A/Yz9db2Efht+Hb3CfoY+u/7+fzI/P39If8uAYABGgLYAjADfQKUAwMGVgbnB0sHLQd1B8wIIQmJCOMHFwfuCJ4JYQnrCOwGbwdLB+MGkQaiBZkDrwI3A5cDWQLdAcIBPQCb/wT/0fyA/Kj7X/sJ+3H5xfg4+Vr4ifgI+ej4C/ho9wz59fnu+MP4Dvpp+i/7L/ve++/7ZvxC/WD+FP8P//v+Xf9QAE4A+wGtA3MDxARwBfcFWQUvBccFjQb3BQ0GrQVFBXAGQQdAB68G0QZcBUkE+wRCBV8DwQO7A+cBagFBAGQA5v5x/vr+KP5R/g/+afz2+5n81vyP++76T/rv+mL6",
+            "RfoI+/36//rI+k36zfpF+5777/vz+6/7xPzy/EP+8f3I/gEAywCPAdMArgCaACgBWQFNAnIDIAPiAu8CEAPUA24EFgV1BaME1gTuBBgEZQSaBKYDIQRyA2ADqgLfAv0CFwLkAWkBaQAYADj/f/9P/2L+hf3x/Jv9ufwJ/ID7svv6+/j7I/wc/HT8w/yY/HH8qvyz/IP8uvz8/OH8q/w4/Sb9rf0N/mv+qf6K/8X/lgBvABwBGwEIASsBzgFMAnwCJgMNA5cDIQNQAyIDpAOJA3UDmgMlA4ID6gKaAlICwQEjAnQChgFZAYoBjwGgAOb/OwBk/wj/X/8k/yL/Cf9A/lD+Mv6d/Z39Uf3x/FL9aP1q/Wz9qv3A/Wz9cP2d/bD9gv0k/v39qf5W/q3+",
+            "F/8g/5P/BgBBAJUAjgDMAPMAQAGiAdkBBQLvAdAB1wF/AikCDgKXAvACsQJGAhACEgJNAvwBTAJyAmUCKwL/ATwB6ABuABgA6P8AACgAJQD6/6r/gf97/zL/+/7T/sf+kv6f/hn+sP29/fj9tv2V/ev9Ef5Y/nb+YP4U/iv+OP4a/iH+qf6q/tr+MP80/2z/3P/X/ycAGQCsANkAKAEsAUEBRwFEAT0BRgHKAZgBhgHfAfQBswEIAjECEwLWAbIBYAFxARwBKwE8AQwBDwGwAFAARwDf/8z/fP9i/07/Rf8T/7/+m/6N/lH+iv6b/sH+Xv6I/nb+jf55/lL+Wf4z/nj+l/68/sT+Gf8K/wX/Jv9U/2b/q/+q//L/NgBeAI0AfwCEAIwAiQC4ABQB",
+            "FAFZAWsBdQFhAZYBtQGbAaYBbwFoASMBDgEmASEBLQHrAKsAfwCxAGQASQA2AP//FgAQAAgAyv9+/2H/Wv8s/x////4n/y7/9v7p/uH+sv61/un+yv7Z/gT/+v75/uH+Ef8r/zH/W/80/zX/WP+B/7H/2f+//9//6v8sAD4AfgByAHMAewC9APMAAwElAQwBJQETAQAB4QDxABsBIwEEAesA/wDuALcA1QC2AJ4AeQCQAHgAewA7AAsA3P/K/9z/v/+X/4T/nv+f/2r/Vv9d/yz/Lf8x/xf/Gv8e///+BP80/xD/DP8V/yP/WP9h/1n/df+P/4H/hv+O/6b/rP/m//D/+v/6/ywAMgBTAGIAawCOAJwAvQCfAKMAwACxAMgAtADMANkA5wDIAJ8A",
+            "lwCVAJAAnQCmAIEAYgBlAGYASQA/ADgAGQAKAOD/v/+l/5//iv+J/5D/kf98/4f/Xv9a/1T/Y/9r/3v/Wv9F/2b/d/+D/4P/h/+M/5T/j/+m/7v/vv+//+T//P8LAPv/IAA3ACcAOQAwAD8AUwBqAFsAcQBjAG8AfgCUAIMAkQCTAJwAiACHAIIAiQB9AGQAVABVAGIAXQBSAEkAMQAyACwAFwARAAcA///p/+X/wf/K/6v/rP+e/43/nv+X/3//gP93/3v/ev99/4L/mP+K/5T/qv+t/73/yP/a/8v/2//c/+P/7//9/woAGAAvADAAMABFADkAOgBJAEQATgBOAGEAYABbAGkAYABqAFgATABNAFIAXQBcAFoARwAyADAAIgATABUAGgAWAAwA",
+            "AwDw//X/6//w/+b/zv/U/8r/zP/D/8L/tP+r/7f/qv+f/63/qf+4/6n/tP/A/7n/vv/F/8//xf/D/9r/6v/3/wAA+P8HABEACwAMAAsAGAAkAC8APwBDAEoAUwBHAEsARwBFAEgAPwA+AEEAQQA9AD8AQwBCAEEAPgA7ADgALwAeABAAEwATAAoABQD4//f/+v/1//D/4//e/9T/zP/Q/9D/1f/P/9X/1f/O/9X/0P/O/9n/2P/d/+T/3v/d/9z/5P/t/+v/8f/v//b/+P8AAAAAAQACAAYACwARABMAEQASABUAFgAUABcAFwAdABwAGAAXABgAFAAVABYAFgASABQAEQAMAA0ADQAKAAcAAwAAAAIAAQD+/////P/6//j/9v/1//T/9v/z//T/",
+            "9P/0//b/9f/0//P/9v/2//b/+P/6//n/+v/5//z//P/+//7//v///wAAAAAAAAAAAAAAAAEAAAABAAEAAQABAAAAAAA=",
+        },
+        ["Lowyx/Embedded/v2/UI_tick.wav"] = {
+            "UklGRqYFAABXQVZFZm10IBAAAAABAAEAIlYAAESsAAACABAAZGF0YYIFAAAAAEcA8AACAk8D8ANJBrUGrwfXCDMNKw/LEkcTyhRZEo4RLRU8EmgStRN3FloXgRJAD8AILAYVCIcIWf5s+if4fvP39Q/ykO2z6ijk799P5GjjjObS5+HpF+hP4yTl1Okr7avu0+8l7Ent9uwo7azyB/bS/FcCAQElB9AEDwWYDEERshD0EFkSJhWdFucVEBnkGBoZ1hXqFLoUohF6Dz4TEhUYFK4NJQ23CbYK2QXeBkAFtf+TACD7FvmY+LL48/Ve8g/vo+x57jbtoO7W7avvJvGd7n7ts+t77STvPvH08Njyt/UD9wv2TfbI9kr5KP2U/ev+5wJTBXoGxgfZCCYI",
+            "xAgRDEoMng+FDl0Q8xFwEgkTSRI/EUwRyxDzDg8OSg0NCeEIFQlMBR4F1QOpAv4A0wAv/1X7lPrc+Vb52viE9Uv1MPVq9TD1yfQS9J/01vRH9ZT01/TX9pn37ffP92v3Efmd+Xz7W/3m/HT++f/C/9kALgG2ARAEhwNcBn8F+AYyCBMJnwkBCe8HOQqCCrcJTwhBCL8JYAnuB9QHSQehBhUF8QN+A9wCdwJ/ANX+f/9s/4f9I/4k/j39J/y7+5P61vjd+fH5jfg89+D2+Pbx9qr4j/kK+Ub6MfvY+YX6ovs9/Mf8mP3z/vv9yv0i//D+4gAFAvoBzALIA2sD8AOZAzsFcgY/BsEGsAZuBjoHPgd4B8oGxgZ7BXMElgN1BMwDuANUA6cDBwP8AoMC",
+            "xAECAUwAGwCe/h3+iP3c/Of78Puj+1j7G/td+gz6cvqM+l36UPow++b6vPs6+wz8i/un++r7lvzc/Lb9zP2n/d/9Xv77/gr/fv9zAJEBrQH9AS0C+AEfA1QD2gKkAwkE4wPxA9cDfQMjBKYD4gP5AyYD5gKIAnYCTwIbAi8CXgFuAYAAjgCFAOL/nP9m/4z/gf9x/pj+sf2l/aT9Q/2k/RT9z/y4/Oj8Lf1L/Tf93vyY/JH88fxL/aL9n/02/hT+Hf4x/hL/Nf9S/3r/UgCuADoBRQEkAb8B0AEiAoIChALGAq8CSAK5AtACXQIlAg8C1wHpAUUCWAJjAjYCKAKMASIBDAEtAesAsACoAE4At/9U/zP/Nv8a/zH/t/6h/pP+SP4s/gn+Pf5Q/k3+",
+            "Of4l/lP+/f3w/dT9FP6G/pr+jv7x/j7/YP9B/xv/Lv+W/9b/0P8yAI0AqwC4AKgAxADFAAEBXgFoAWoBggFJAV4BPgGMAW8BVwExAXEBgAGEAYkBegFiAf4AEQG3AIYAaAAlAAUAHwACAPH/9P/N/7X/g/8//0X/FP/l/sr+tf7p/t3+tP6W/on+ff6+/uT+wP75/t/+Dv8k/03/Uv9t/2L/qv+8/+X/DgAyAEYATABxAIQAnQB3AJkAtQCrAMcA8ADKAOsA0ADVANkA7QDyAPMA+QAEAfgA5ADsANEAmQBtAEwAWQA0ABMADgAQAAcA4/+9/6H/s/+9/7r/pP91/3P/VP9t/2H/Zv9i/zz/Q/9b/0X/Sf9J/zv/Lf9U/3T/hP+Z/7L/qP+b/8f/",
+            "5P/n/+P/AQD7/wgAGwA2AEQAVwBHAEcASABNAF4AeAB4AG8AcgBoAHUAbgByAHcAcgBuAF0ASABHADkAQQArABwAIQAdAAkA/v/0//n/AADw/+T/5v/k/9X/2P/G/73/vf/D/8v/wf+6/7n/vf+7/7n/uv/E/8T/w//J/9T/0v/b/+T/6//o/+//+f/9//r/BAAHAA4ACAAGAAoADAALAAwADwAZABcAFAAUABsAHgAaABkAFgAWABQAEQARAA4AEAARAA4ACwAMAAsACgAFAAIAAAAAAAAA//////3/+//8//z/+//8//z//f/8//z//P/9//7//v/+////AAA=",
+        },
+        ["Lowyx/Embedded/v2/UI_ready.wav"] = {
+            "UklGRiYfAABXQVZFZm10IBAAAAABAAEAIlYAAESsAAACABAAZGF0YQIfAAAAABcAWwDIAFYB/AGvAmUDDwSiBBQFWQVsBUcF6AROBH8DfgJWAQ8At/5X/f37tfqK+YT4rPcH95f2XfZZ9of24vZk9wj4x/ic+YD6cftr/G79ef6O/60A3AEbA20E0wVKB9AIYArwC3YN5Q4tEDwRARJpEmMS4RHVEDgPBw1CCvQGKQP4/nr6z/Uc8YfsPOhh5CDhnt753E3cqdwY3pngIuSf6PLt9vN9+lQBRggaD5YVRhsOINgjiiYWKHQorCfKJeYiIh+hGo8VGhBwCr8ENf/3+Sj15vBF7VPqGeiX5sXlmOUB5u3mROjz6ePr/+038HzywfQA9zT5XPt5/ZD/",
+            "owG5A9YF+wcpClwMjg63EMkSsxRkFsgXyRhUGVcZwRiHF6IVEBPYDwUMqQffAsb9gPg28xLuP+nn5DLhRN473C3bKts33FPeb+F35U3qzO/I9RH8dQLCCMQOTBQvGUgdeiCwItwj/iMZIz4hgh4DG+QWTBJjDVIIRANf/sT5kfXg8cLuQuxl6izpjuiB6Pfo3Okf66vsbu5W8FPyWfRe9lz4Ufo7/Bz+9//RAa4DkQV7B20JZAtYDUEPFBHAEjYUZBU2FpwWhRbkFa8U4RJ6EIAN/wkIBrQBH/1o+LXzLO/x6izn/uOH4eDfHd9J32jgdeJl5SLpke2P8vX3l/1IA9sIJA74EjMXtBpjHS4fDCD8HwUfNR2iGmcXoxN6DxELiwYOArz9svkJ9tfy",
+            "KvAM7n/sg+sQ6xzrmet37KXtEe+q8GHyKfT39cP3iPlE+/f8ov5JAO8BmQNJBf8GvAh8CjkM6g2ED/kQOxI6E+QTKhT/E1cTKhJ0EDYOdwtCCKgEvwCi/G34QfRB8I7sSumS5oLkL+Op4vriI+Qf5uLoV+xl8O30yfnU/uQD0gh2DawRUxVQGI4a/xucHGUcYxuiGTgXPRTPEAwNFgkOBRMBRf26+Yr2x/N98bPvau6i7VLtce3y7cfu3+8s8Z/yKvTC9V739/iJ+hP8lf0R/4kAAgJ+AwAFiAYVCKQJLwuuDBYOWw9vEEURzBH5Eb0RERHtD1AOOgyyCcQGfwP5/0j8iPjW9FDxFe5C6/HoOecu5tvlSOZ1513p8+sk79jy8vZS+9T/UwSuCMAM",
+            "ahCPExkW9xcbGYMZLhkmGHgWNxR5EVoO9QpoB9EDSgDw/Nb5Efev9LryOPEq8IzvWe+H7wnw0/DX8QfzV/S69Sb3lfgB+mb7xPwa/mz/uwALAl4DtwQVBngH2wg6CosLxwziDc4OgA/qDwAQuQ8LD/INbQx9CioIfQWHAlr/DPy0+G/1VvKF7xXtHuuy6ePoueg86WnqOuyk7pTx9fSr+Jn8ngCdBHQIBQw0D+gRDxSZFX4WuRZPFkYVrBOTEQ8POQwqCfwFygKs/7j8Avqb94314vOe8sHxSPEr8WPx5fGk8pTzqfTY9Rb3XPij+eb6I/xZ/Yn+tv/gAAwCOwNvBKgF5AYhCFcJgQqWC4oMVA3nDTgOPA7sDT8NMgzFCvkI1gZnBLgB3f7n++74",
+            "CvZS89/wxu4c7fLrVetN69/rCO3C7gHxtPPH9iH6qP0+AcgEKghJCwsOXRAuEnETIBQ4FL4TuBIzEUEP8wxhCqAHyATxATD/mPw6+iT4Yfb29OfzM/PX8s3yDPOL8z70HPUY9in3R/hp+Yz6q/vE/Nj95v7x//oABgIVAykEQAVaBnQHhwiNCX8KUgv9C3YMsgyoDFAMpgumClAJpweyBXoDDQF8/tf7M/ml9kP0IvJV8O/u/e2K7Z3tOe5b7/3wEvOM9Vf4XfuG/rgB2wTVB44K8gzuDnQQexH9EfkRcxFzEAUPOA0dC8kITwbGA0AB0v6L/Hv6rPgp9/X1E/WD9D/0Q/SH9AL1qvV19lr3UPhQ+VP6VvtV/E79Qv4z/x8ADQH8Ae4C5APeBNkF",
+            "0wbHB64IgQk3CscKKQtTCz0L4Qo7CkgJCQiABrYEsgKBADP+1vt++T73KPVQ88bxmfDW74fvr+9S8Gvx8/Lh9CX3rvln/Dz/EwLZBHcH1wnnC5kN3w6zDxAQ9g9pD3EOGQ1wC4QJaQcxBe0CsACM/o38wfox+eX34fYm9rL1g/WS9dn1T/br9qX3dPhS+Tf6HvsE/Ob8xP2d/nL/RQAYAe4BxgKiA4EEYQU/BhcH4QeZCDUJrwn9CRgK+QmaCfkIFAjqBoEF3gMJAg8A/v3j+8/50/cB9mj0GPMe8oTxUfGK8S/yPfOt9HX2h/jT+kf9zv9VAsgEEwclCewKXQxtDRUOUw4oDpcNqQxoC+AJIQg7Bj0EOAI9AFr+mvwK+7H5lvi69yD3xfam9r72",
+            "Bfd19wb4sPhs+TP6APvO+5r8Y/0n/uj+pv9hAB4B3QGeAmMDKgTxBLYFdQYmB8YHTAixCO4I/QjXCHgI3AcEB/AFowQlA3wBtf/a/fr7I/pk+M32bfVP9IDzCPPt8jLz2PPa9DL21fe5+c37Af5CAIECqwStBnkIAQo5CxoMngzDDIsM+gsWC+sJhAjtBjYFbgOiAeL/OP6x/Fb7LPo6+YL4BPi996z3yfcQ+Hv4Afmc+UX6+Pqv+2b8HP3O/Xz+J//Q/3cAHwHKAXcCJgPYA4kEOAXgBXwGBgd4B8wH+wf/B9QHdQfgBhUGFQXjA4cCBgFt/8T9GPx4+vD4jvde9mz1wvRm9F/0rfRR9Ub2hvcI+cD6ofyb/p4AnAKEBEYG1QclCS0K5gpLC1wL",
+            "GguKCrIJnQhTB+MFWAS/AiYBm/8k/s/8ofui+tT5OvnT+J34lvi4+P74Yvnd+Wr6A/uj+0f86vyL/Sn+xP5c//L/hwAdAbUBUALtAosDKQTEBFgF4AVXBrgG/QYgBxwH7QaPBgEGQwVWBD4DAQKlADX/uf09/M36dflB+D33cfbm9aP1q/X/9aD2h/ex+BP6o/tU/Rr/5QCpAlYE3wU5B1gINgnNCRkKGQrRCUQJeAh3B0oG/ASZAywCwQBk/xv+8fzs+xH7Yvri+Y/5Z/lo+Y350fku+p/6IPuq+zn8y/xc/ev9d/4B/4j/DACSABgBoAEqArYCQwPQA1kE2wRSBbkFCwZDBlsGUQYfBsMFPAWLBLADsAKPAVUACv+3/Wb8Ifv0+en4Cvhf9+/2",
+            "wPbU9i33yPei+Lb5+vpl/Oz9gv8bAaoCIwR6BaUGmgdUCM4IBAn4CKsIIghjB3YGYwU1BPYCsQFvADv/G/4X/TX8efvm+nv6Ofod+iT6SvqM+uP6S/u/+zv8u/w9/b79Pv66/jT/rP8iAJkAEAGKAQUCgwIAA30D9gNpBNAEKQVuBZoFqwWbBWcFDgWPBOkDHwM1Ai8BFADr/rz9kfx0+236hvnH+Dn44PfB99/3OfjP+Jv5mvrC+wv9a/7W/0EBogLtAxgFGQbqBoUH5gcLCPUHpgciB28GlQWbBIoDbAJKAS0AHf8h/j/9fPzc+1/7B/vT+sD6zPrz+jH7gvvh+0r8uvwt/aH9E/6E/vP+X//K/zIAnAAHAXQB4gFSAsICMQOcAwAEWgSmBOAE",
+            "AwUMBfgExARuBPYDXAOiAswB3wDg/9b+yP2//MT73voX+nX5//i5+Kj4zfgo+bf5dvpg+2/8mP3V/hkAXAGTArUDuQSWBUgGyAYUBysHDQe+BkAGmQXQBO0D9wL3AfQA+f8J/y3+aP3A/Df8z/uG+177Uvti+4n7xPsP/Gb8xfwp/ZD99/1d/sH+I/+D/+L/PwCeAP0AXgHBASUCiALqAkkDoQPvAzAEXwR7BH4EZwQyBOADbwPgAjYCcwGcALf/yP7Y/e78EfxJ+536FPqz+X75d/mi+fz5hPo2+w38BP0R/i3/TgBsAX8CfANeBBwFsgUbBlYGYQY+Bu8FdwXcBCUEVgN5ApQBrgDQ//3+PP6S/QH9jfw1/Pr72/vW++j7D/xG/Iv82vww/Yr9",
+            "5f1B/pz+9f5L/6H/9f9IAJ0A8gBJAaEB+gFTAqoC/QJKA40DxAPrAwAE/wPlA7EDYwP5AnUC2AEnAWQAlv/B/uv9HP1b/K37Gfum+lb6L/oy+mD6uPo5+977pPyE/Xf+df93AHUBZgJEAwcEqgQoBX4FqwWtBYUFNwXHBDcEjwPUAg0CQAF0ALD/9/5P/rv9P/3c/JP8Y/xM/Ez8YPyF/Ln8+PxA/Y393v0w/oH+0v4h/27/uv8EAE8AmgDmADQBgwHSASECbgK3AvoCNANjA4MDkgOMA3EDPwP0ApECFwKIAeYANgB+/7/+Af5L/aH8CvyM+yv76/rP+tn6Cftf+9j7cfwm/fL9zf6x/5YAdgFLAgwDtQNABKoE8AQQBQoF4QSVBCsEpgMNA2QC",
+            "sQH6AEUAmP/2/mP+5P15/SX96PzC/LL8tfzK/O78H/1Z/Zr93/0o/nD+uf4A/0b/i//O/xAAUwCWANoAIAFmAa0B8wE3AncCsgLkAgsDJQMvAyYDCgPZApICNgLFAUMBsAARAGv/wf4Z/nj95Pxh/PX7pPtx+1/7bvug+/L7ZPzy/Jf9UP4V/+H/rABzAS0C1gJoA94DNgRuBIQEeQROBAUEoQMnA5sCAwJiAb8AHwCH//j+ef4L/rD9af03/Rn9Df0U/Sn9TP15/a796f0n/mj+qf7p/ij/Z/+j/9//GgBVAJEAzgAMAUsBigHIAQQCPQJwApsCuwLQAtYCywKuAn8CPALmAX8BBwGCAPT/X//H/jL+pP0j/bL8VvwT/Ov74Pv0+yb8dfzf/GL9",
+            "+f2g/lH/BwC8AGsBDwKhAh8DgwPMA/gDBgT3A8sDhQMpA7gCOQKvASABjwABAHv//v6P/jD+4/2n/X79Zv1g/Wj9ff2e/cj9+P0t/mb+n/7Z/hL/S/+C/7j/7f8hAFYAjADCAPoAMgFqAaEB1gEIAjQCWAJ0AoMChgJ5Al0CLwLwAaEBQgHVAFwA3P9W/8/+S/7P/V79/fyv/Hj8WfxV/Gv8nfzo/Ev9xP1N/uT+g/8lAMYAYQHwAW8C2wIwA2wDjgOVA4MDVwMVA74CWALkAWgB5wBmAOr/c/8G/6b+VP4S/uD9v/2t/an9s/3I/ef9Dv46/mr+nP7Q/gP/Nv9o/5n/yf/4/ycAVgCGALcA6AAaAUwBfQGsAdcB/QEcAjMCPwI+AjECFALoAa4B",
+            "ZAENAakAPADJ/1L/2v5l/vj9lv1C/QH90/y8/L381vwG/U79qv0Z/pb+Hv+t/z0AzABUAdEBPwKbAuMCFAMuAzADGwPwArECYQIDApsBKwG4AEUA1/9v/xD/vf53/j/+Ff76/ez96/32/Qv+KP5L/nP+n/7M/vr+KP9V/4H/rf/X/wAAKgBVAH8AqwDXAAQBMAFbAYUBqgHLAeYB+AEBAv4B8AHUAaoBcwEvAd8AhQAiALv/UP/l/n/+H/7K/YL9S/0m/Rb9G/01/WT9qP39/WL+1P5P/8//TwDNAEUBsgERAmACnALEAtcC1QK+ApQCWQIQAroBWwH3AJAAKgDJ/27/G//T/pf+Z/5F/i/+Jf4n/jL+Rv5h/oH+pv7N/vX+Hv9H/2//l/+9/+P/",
+            "BwAtAFMAeQCgAMcA7wAWAT0BYQGCAZ4BtQHDAckBxQG2AZoBcwFAAQEBuABmAA0AsP9R//L+mP5E/vr9vf2P/XL9Z/1u/Yr9t/33/Ub+ov4J/3j/6v9cAMwANQGUAeYBKgJcAnwCiQKDAmwCQwIMAsgBegEkAcoAbwAVAL//b/8n/+n+tf6N/nD+X/5Y/lz+Z/56/pT+sf7S/vX+Gf8+/2L/hv+p/8v/7f8NAC4AUAByAJUAuADcAP8AIQFAAV0BdQGIAZQBlwGSAYIBaAFDARMB2QCWAEwA/f+p/1T/AP+w/mf+J/7z/c39tv2v/bn91f0B/jz+hf7Z/jf/mv8AAGYAyAAkAXcBvgH3ASECOgJCAjoCIgL8AcgBigFCAfUApQBTAAMAuP9y/zP/",
+            "/v7S/rD+mP6L/of+i/6X/qn+wP7b/vn+Gf85/1n/ev+Z/7j/1//0/xEALwBNAGwAiwCqAMoA6QAHASMBOwFQAWABaQFrAWQBVAE7ARgB7AC3AHoANgDv/6T/WP8O/8j+iP5R/iX+Bf7z/fD9/f0Y/kL+ef68/gn/Xf+3/xEAbADDABMBWwGYAcgB6wH+AQMC+QHhAbwBjAFTARIBzQCFADwA9v+0/3b/QP8S/+z+0P69/rL+sP61/sH+0v7n/gD/G/83/1T/cf+O/6r/xf/g//v/FAAvAEoAZQCBAJ0AuQDVAO8ABwEdAS8BOwFCAUIBOwErARMB8gDJAJkAYQAkAOT/of9d/xz/3v6n/nj+U/45/iv+K/44/lP+e/6u/uz+Mv9+/87/HwBvALwA",
+            "AgFAAXUBnQG6AckBygG/AacBhAFYASMB6QCqAGoAKQDs/7H/fP9M/yX/Bf/t/t7+1v7V/tv+5v72/gr/If85/1L/bP+G/5//uP/Q/+j/AAAXAC4ARgBfAHgAkQCqAMIA2QDvAAEBEAEbASABHwEXAQcB8ADSAKwAfwBMABUA3P+g/2T/Kv/0/sT+nP58/mf+Xf5f/m7+iP6t/t3+Fv9V/5r/4v8pAHAAtADxACcBVAF2AY0BmAGXAYsBdAFTASoB+gDFAI0AUwAaAOT/sP+B/1n/N/8c/wj/+/72/vb+/P4I/xf/Kf89/1P/av+B/5f/rv/E/9r/7/8DABgALQBDAFkAbwCFAJsAsQDFANgA6AD1AP0AAQH+APYA5wDRALUAkgBpADsACQDW/6D/",
+            "a/84/wn/3/68/qL+kf6L/o/+nf63/tr+Bv86/3P/sf/y/zEAcACrAOEADwE1AVIBZAFsAWkBXQFGAScBAQHWAKYAcwBAAA0A3v+x/4j/Zf9I/zH/IP8W/xL/FP8a/yX/M/9E/1b/av9+/5L/p/+7/87/4v/1/wYAGQAsAD8AUwBnAHoAjgChALMAwwDRANwA4gDlAOIA2QDLALYAmwB7AFYALAAAANH/of9y/0X/HP/4/tv+xf63/rP+uf7I/uD+Af8q/1n/jf/F//7/NwBuAKIA0QD5ABkBMQFAAUUBQAEzAR4BAQHeALYAiwBeADAAAwDZ/7L/j/9w/1f/RP83/y//LP8v/zX/P/9M/1v/bP9+/5D/ov+0/8b/1//o//n/CQAaACoAPABNAF8A",
+            "cACCAJMAogCwALwAxQDKAMsAyAC/ALEAngCFAGgARQAgAPj/zv+j/3r/Uv8u/w//9v7k/tr+2P7e/u3+BP8j/0n/dP+j/9X/BwA6AGsAmQDBAOQA/wATAR4BIQEcAQ8B+gDfAL8AmwB0AEwAIwD8/9f/tP+V/3v/Zv9W/0v/Rf9D/0b/Tf9W/2L/cP9//4//n/+v/7//z//f/+7//f8LABoAKQA4AEgAVwBnAHcAhQCTAJ8AqQCxALUAtQCxAKgAmwCJAHIAVwA4ABUA8v/M/6b/gv9f/0D/Jf8Q/wH/+f75/gD/D/8l/0H/ZP+L/7b/4/8PADwAaACPALMA0ADnAPcAAAEBAfsA7gDbAMIApQCEAGEAPAAYAPb/1f+3/5z/hv90/2b/Xf9Z/1j/",
+            "W/9i/2v/dv+C/5D/nv+t/7v/yf/X/+X/8v8AAAwAGQAnADUAQgBQAF4AbAB5AIUAkACYAJ4AoQChAJwAlACHAHYAYQBIACwADQDt/8v/qv+J/2v/UP85/yf/G/8V/xb/Hv8s/0H/XP97/5//xf/u/xUAPQBjAIYApAC+ANEA3gDlAOUA3gDRAL8AqACNAG8AUAAwAA8A8f/U/7r/o/+Q/4D/df9u/2v/a/9u/3T/ff+H/5L/nv+r/7j/xf/S/97/6v/2/wEADQAZACUAMQA+AEoAVwBjAG4AeQCCAIkAjgCQAI8AigCCAHYAZgBSADwAIgAGAOr/y/+u/5H/dv9f/0v/PP8y/y//Mf85/0f/Wv9z/5D/sP/T//f/GgA9AF8AfQCXAK0AvQDIAMwA",
+            "ywDEALgApgCRAHkAXgBCACUACADu/9X/vv+q/5n/jP+D/33/e/98/3//hf+N/5b/oP+r/7f/wv/O/9n/5P/v//n/AwANABgAIwAuADkARABPAFoAZABtAHUAewB/AIAAfwB6AHIAZgBYAEYAMQAZAAAA5//M/7L/mP+B/23/XP9Q/0j/Rf9I/1D/Xv9w/4f/of+//97//v8dADwAWgB0AIsAnQCrALMAtgC0AK0AoQCRAH0AZwBPADYAHAADAOv/1f/B/7D/ov+X/4//i/+J/4r/jv+U/5v/o/+t/7f/wf/L/9X/3//p//P//P8EAA4AFwAhACsANQA/AEgAUgBbAGMAaQBuAHEAcgBwAGsAZABZAEsAOwAoABIA/f/l/83/tv+f/4v/ev9r/2H/",
+            "W/9a/13/Zv9y/4P/mP+w/8v/5/8DAB8AOwBVAGwAfwCPAJoAoACiAJ8AmACNAH4AbABYAEIAKwAUAP//6v/W/8X/tv+q/6H/m/+X/5b/mP+b/6H/p/+v/7f/wP/J/9P/3P/k/+3/9v/+/wUADgAWAB8AKAAxADkAQgBKAFIAWQBfAGMAZQBlAGMAXwBXAE0AQAAxACAADQD5/+T/z/+6/6b/lf+G/3r/cf9t/2z/cP94/4X/lP+o/77/1v/v/wcAIQA5AE8AYwB0AIEAigCPAJAAjQCGAHsAbQBdAEsANwAjAA4A+//p/9j/yf+8/7L/qv+l/6L/ov+k/6f/rP+y/7n/wf/J/9H/2f/h/+n/8f/4/wAABgAOABUAHQAlAC0ANQA8AEQASgBQAFUA",
+            "WQBaAFoAWABTAEwAQwA3ACkAGQAIAPb/4//R/77/rf+e/5H/h/+A/3z/ff+B/4n/lf+j/7X/yf/e//X/CwAhADcASgBcAGoAdQB8AIAAgAB9AHYAawBfAFAAPwAtABsACQD5/+j/2v/M/8L/uf+y/67/rP+s/67/sv+2/7z/wv/J/9D/2P/f/+b/7f/0//r/AAAHAA0AFAAbACIAKQAwADcAPQBDAEgATQBPAFEAUABOAEkAQgA5AC8AIgATAAQA9P/j/9P/wv+z/6b/m/+T/43/i/+M/5D/mP+j/7D/wP/T/+b/+v8OACEANABFAFQAYABqAHAAcgByAG4AZwBeAFIARAA1ACUAFQAFAPf/6P/b/9D/x/+//7r/t/+1/7b/uP+7/7//xP/K/9D/",
+            "1//d/+T/6v/w//b//P8BAAcADQATABkAIAAmACwAMgA4AD0AQQBFAEcASABHAEQAQAA6ADEAJwAcAA8AAQDz/+T/1f/G/7n/rv+k/53/mf+X/5n/nf+l/6//vP/K/9v/7P/+/xAAIQAyAEAATQBYAF8AZABmAGUAYQBaAFIARwA6AC0AHgAQAAIA9f/p/93/1P/M/8X/wf++/77/vv/A/8P/x//M/9H/1//c/+L/6P/u//P/+P/+/wIABwANABIAGAAdACMAKAAuADMANwA7AD4APwBAAD8APAA4ADIAKgAhABYACwD///L/5P/X/8r/v/+1/63/p/+k/6P/pf+p/7D/uv/G/9P/4v/y/wEAEQAgAC8APABHAFAAVgBaAFsAWQBVAE8ARwA9ADIA",
+            "JQAZAAwAAAD0/+n/3//X/9D/y//H/8X/xf/G/8j/y//O/9P/1//c/+H/5//s//H/9f/6////AwAHAAwAEQAWABsAIAAlACkALgAyADUANwA5ADkAOAA1ADEAKwAkABwAEgAHAP3/8f/l/9n/zv/E/7z/tf+w/67/rf+v/7T/u//D/87/2v/o//b/AwASAB8ALAA3AEEASABNAFAAUQBPAEsARQA9ADQAKgAfABQACAD+//T/6v/i/9r/1P/Q/83/zP/L/8z/zv/R/9T/2P/d/+H/5v/q/+//8//3//z/AAADAAcADAAQABQAGQAdACEAJgApAC0AMAAxADMAMgAxAC8AKwAlAB8AFwAOAAUA+//x/+b/3P/S/8n/wv+8/7j/tv+2/7n/vf/E/8z/",
+            "1v/h/+3/+v8FABIAHgApADMAOwBBAEYASABIAEYAQgA8ADUALQAkABoADwAFAPz/8//r/+T/3f/Y/9X/0v/R/9H/0v/U/9f/2v/d/+H/5f/p/+3/8f/1//n//f8AAAMABwALAA8AEwAXABsAHgAiACUAKAArACwALQAtACsAKQAlACAAGgATAAsAAgD6//D/5//e/9b/zv/I/8P/wP++/7//wf/F/8v/0//c/+b/8f/9/wcAEgAdACYALwA2ADsAPgBAAEAAPgA6ADUALgAmAB4AFQAMAAMA+//z/+z/5v/h/93/2//Z/9n/2f/a/9z/3//i/+X/6P/s/+//8v/2//n//P/+/wAAAwAGAAgACwAOABAAEwAVABgAGQAbABwAHQAdABwAGwAZABYA",
+            "EwAPAAoABQAAAPz/9v/x/+z/6P/k/+H/3//e/97/3//h/+T/5//r//D/9f/6/wAABAAJAA0AEQAUABcAGAAZABkAGQAXABUAEwAQAA0ACgAGAAMAAAD+//z/+v/4//f/9v/1//X/9f/2//b/9//4//n/+v/7//z//P/9//7///8AAAAAAAAAAAEAAQACAAIAAgADAAMAAwADAAMAAwADAAMAAgACAAEAAQABAAAAAAAAAAAAAAA=",
+        },
     }
+    if type(makefolder) == "function" then
+        for _, folder in {"Lowyx", "Lowyx/Embedded", "Lowyx/Embedded/v1", "Lowyx/Embedded/v2"} do
+            if type(isfolder) ~= "function" or not isfolder(folder) then pcall(makefolder, folder) end
+        end
+    end
     for path, chunks in assets do
         local exists = type(isfile) == "function" and isfile(path)
         if not exists then pcall(function() writefile(path, decode(table.concat(chunks))) end) end
@@ -382,7 +434,7 @@ local function lowyxAsset(path, fallback)
 end
 local UIPreferences = {
     Transparency = 0, Keybind = "LeftControl", Animations = true, Loading = true,
-    Color = { 245, 245, 245 }, ColorfulLetters = false,
+    Color = { 245, 245, 245 }, ColorfulLetters = false, Sounds = true,
 }
 pcall(function()
     local saved = game:GetService("HttpService"):JSONDecode(readfile(initialOptions.SettingsFile or "Lowyx/UISettings.json"))
@@ -392,6 +444,7 @@ pcall(function()
 end)
 if initialOptions.LoadingScreen ~= nil then UIPreferences.Loading = initialOptions.LoadingScreen end
 if initialOptions.Animations ~= nil then UIPreferences.Animations = initialOptions.Animations end
+if initialOptions.Sounds ~= nil then UIPreferences.Sounds = initialOptions.Sounds == true end
 if initialOptions.Keybind ~= nil then
     UIPreferences.Keybind = typeof(initialOptions.Keybind) == "EnumItem" and initialOptions.Keybind.Name or initialOptions.Keybind
 end
@@ -4188,7 +4241,7 @@ objects[1].Name = "LowyxHub"
 objects[1].Archivable = true
 objects[1].Enabled = true
 objects[1].DisplayOrder = 2147483647
-objects[1].IgnoreGuiInset = false
+objects[1].IgnoreGuiInset = true
 objects[1].ScreenInsets = Enum.ScreenInsets.CoreUISafeInsets
 objects[1].ClipToDeviceSafeArea = true
 objects[1].SafeAreaCompatibility = Enum.SafeAreaCompatibility.FullscreenExtension
@@ -4199,7 +4252,7 @@ objects[2].Archivable = true
 objects[2].Active = false
 objects[2].Interactable = true
 objects[2].Visible = true
-objects[2].Size = UDim2.new(0, 825, 0, 534)
+objects[2].Size = UDim2.new(0, 740, 0, 534)
 objects[2].Position = UDim2.new(0.16357421875, 0, 0.10735294222831726, 0)
 objects[2].AnchorPoint = Vector2.new(0, 0)
 objects[2].AutomaticSize = Enum.AutomaticSize.None
@@ -4354,6 +4407,30 @@ end)
 
 local window = objects[2]
 local introFinished = false
+local uiSounds = {}
+for _, name in {"click", "tick", "ready"} do
+    local sound = Instance.new("Sound")
+    sound.Name = "LowyxSound_" .. name
+    sound.SoundId = lowyxAsset("Lowyx/Embedded/v2/UI_" .. name .. ".wav", "rbxasset://sounds/electronicpingshort.wav")
+    sound.Volume = name == "ready" and 0.18 or 0.22
+    sound.Parent = gui
+    uiSounds[name] = sound
+end
+local lastUISound = -math.huge
+local function playUISound(name)
+    if not UIPreferences.Sounds or (not introFinished and name ~= "ready") then return end
+    local now = os.clock()
+    if now - lastUISound < (name == "tick" and 0.08 or 0.035) then return end
+    local sound = uiSounds[name] or uiSounds.click
+    if not sound.Parent then return end
+    lastUISound = now
+    sound:Stop()
+    sound.TimePosition = 0
+    sound:Play()
+end
+gui.DescendantAdded:Connect(function(item)
+    if item:IsA("GuiButton") then item.Activated:Connect(function() playUISound("click") end) end
+end)
 local introAlive = true
 local openingWindow = false
 window.Visible = false
@@ -4372,7 +4449,7 @@ viewportScale.Parent = window
 
 local function layoutMetrics()
     local screen = gui.AbsoluteSize
-    local padding = math.min(12, screen.X * 0.05, screen.Y * 0.05)
+    local padding = 0
     local designed = Vector2.new(
         window.Size.X.Scale * screen.X + window.Size.X.Offset,
         window.Size.Y.Scale * screen.Y + window.Size.Y.Offset)
@@ -4386,7 +4463,7 @@ local function clampPosition(position)
     local x = position.X.Scale * screen.X + position.X.Offset
     local y = position.Y.Scale * screen.Y + position.Y.Offset
     local minimumX = padding + size.X * anchor.X
-    local minimumY = padding + 38 * viewportScale.Scale + size.Y * anchor.Y
+    local minimumY = padding + size.Y * anchor.Y
     local maximumX = math.max(minimumX, screen.X - padding - size.X * (1 - anchor.X))
     local maximumY = math.max(minimumY, screen.Y - padding - size.Y * (1 - anchor.Y))
     x = math.clamp(x, minimumX, maximumX)
@@ -4422,22 +4499,41 @@ dragArea.Parent = window
 local dragInput
 local dragStart
 local windowStart
+local windowDragMoved = false
 local dragConnections = {}
+local statusToggles = {}
+local statusMessage
+-- Remove only this UI's stale HUD roots left by earlier versions.
+for _, root in {game:GetService("CoreGui"), playerGui} do
+    for _, child in root:GetDescendants() do
+        if child:IsA("ScreenGui") and child.Name == "LowyxStatusPanel" then child:Destroy() end
+    end
+end
+local statusGui = Instance.new("ScreenGui")
+statusGui.Name = "LowyxStatusPanel"
+statusGui.IgnoreGuiInset = true
+statusGui.ResetOnSpawn = false
+statusGui.DisplayOrder = math.min(2147483647, gui.DisplayOrder + 1)
+statusGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+statusGui.Parent = gui.Parent
+table.insert(dragConnections, gui.Destroying:Connect(function() statusGui:Destroy() end))
 
 local performanceBar = Instance.new("TextLabel")
 performanceBar.Name = "PerformanceBar"
-performanceBar.AnchorPoint = Vector2.new(0.5, 1)
-performanceBar.Position = UDim2.new(0.5, 0, 0, 4)
-performanceBar.Size = UDim2.fromOffset(340, 30)
+performanceBar.AnchorPoint = Vector2.zero
+performanceBar.Position = UDim2.new(1, -330, 0, 0)
+performanceBar.Size = UDim2.fromOffset(330, 60)
+performanceBar.Active = true
 performanceBar.BackgroundColor3 = window.BackgroundColor3
 performanceBar.BackgroundTransparency = 1
 performanceBar.BorderSizePixel = 0
 performanceBar.FontFace = Font.new("rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Medium)
-performanceBar.TextSize = 13
+performanceBar.TextSize = 11
 performanceBar.TextTransparency = 1
 performanceBar.TextColor3 = Color3.fromRGB(210, 212, 218)
 performanceBar.Text = "FPS: --  |  PING: --  |  TIMER: 00:00:00"
-performanceBar.Parent = window
+performanceBar.ZIndex = 70
+performanceBar.Parent = statusGui
 local performanceCorner = Instance.new("UICorner")
 performanceCorner.CornerRadius = objects[3].CornerRadius
 performanceCorner.Parent = performanceBar
@@ -4453,14 +4549,18 @@ performanceCorner:Clone().Parent = performanceBackground
 objects[5]:Clone().Parent = performanceBackground
 local performanceText = Instance.new("TextLabel")
 performanceText.Name = "Values"
-performanceText.Size = UDim2.fromScale(1, 1)
+performanceText.Position = UDim2.fromOffset(8, 8)
+performanceText.Size = UDim2.new(1, -36, 1, -16)
+performanceText.TextXAlignment = Enum.TextXAlignment.Left
+performanceText.TextYAlignment = Enum.TextYAlignment.Top
+performanceText.TextWrapped = true
 performanceText.BackgroundTransparency = 1
 performanceText.FontFace = performanceBar.FontFace
 performanceText.TextSize = performanceBar.TextSize
 performanceText.TextColor3 = performanceBar.TextColor3
 performanceText.TextTransparency = 1
 performanceText.Text = performanceBar.Text
-performanceText.ZIndex = 5
+performanceText.ZIndex = 71
 performanceText.Parent = performanceBar
 performanceBar.Text = ""
 local performanceScale = Instance.new("UIScale")
@@ -4468,7 +4568,7 @@ performanceScale.Scale = 0.92
 performanceScale.Parent = performanceBar
 local performanceEntrance = TweenService:Create(performanceBar,
     TweenInfo.new(0.45, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, 0, false, 0.15), {
-        Position = UDim2.new(0.5, 0, 0, -8),
+        Position = UDim2.new(1, -330, 0, 0),
         BackgroundTransparency = 1,
         TextTransparency = 0,
     })
@@ -4484,6 +4584,66 @@ local performanceTextFade = TweenService:Create(performanceText,
 performanceTextFade:Play()
 performanceEntrance:Play()
 performanceGrow:Play()
+local performanceClose = Instance.new("TextButton")
+performanceClose.Name = "CloseStatus"
+performanceClose.AnchorPoint = Vector2.new(1, 0)
+performanceClose.Position = UDim2.new(1, -3, 0, 3)
+performanceClose.Size = UDim2.fromOffset(22, 22)
+performanceClose.BackgroundTransparency = 1
+performanceClose.Text = "X"
+performanceClose.TextSize = 14
+performanceClose.TextColor3 = performanceText.TextColor3
+performanceClose.ZIndex = 72
+performanceClose.Parent = performanceBar
+table.insert(dragConnections, performanceClose.Activated:Connect(function() performanceBar.Visible = false end))
+local statusDrag
+local statusHeight = 60
+local function clampStatus()
+    local screen = statusGui.AbsoluteSize
+    performanceBar.Size = UDim2.fromOffset(math.max(1, math.min(330, screen.X)), math.min(statusHeight, math.max(1, screen.Y)))
+    local position = Vector2.new(
+        performanceBar.Position.X.Scale * screen.X + performanceBar.Position.X.Offset,
+        performanceBar.Position.Y.Scale * screen.Y + performanceBar.Position.Y.Offset)
+    local size = performanceBar.AbsoluteSize
+    performanceBar.Position = UDim2.fromOffset(
+        math.clamp(position.X, 0, math.max(0, screen.X - size.X)),
+        math.clamp(position.Y, 0, math.max(0, screen.Y - size.Y)))
+end
+table.insert(dragConnections, performanceEntrance.Completed:Connect(clampStatus))
+table.insert(dragConnections, statusGui:GetPropertyChangedSignal("AbsoluteSize"):Connect(clampStatus))
+table.insert(dragConnections, performanceText:GetPropertyChangedSignal("TextBounds"):Connect(function()
+    local height = math.clamp(performanceText.TextBounds.Y + 16, 60, 140)
+    if statusHeight ~= height then statusHeight = height; clampStatus() end
+end))
+local function beginStatusDrag(input)
+    if statusDrag then return end
+    if input.UserInputType ~= Enum.UserInputType.MouseButton1 and input.UserInputType ~= Enum.UserInputType.Touch then return end
+    local screen = statusGui.AbsoluteSize
+    statusDrag = {Input = input, Pointer = Vector2.new(input.Position.X, input.Position.Y),
+        Origin = Vector2.new(performanceBar.Position.X.Scale * screen.X + performanceBar.Position.X.Offset,
+            performanceBar.Position.Y.Scale * screen.Y + performanceBar.Position.Y.Offset), Moved = false}
+end
+table.insert(dragConnections, performanceBar.InputBegan:Connect(beginStatusDrag))
+table.insert(dragConnections, performanceText.InputBegan:Connect(beginStatusDrag))
+table.insert(dragConnections, UserInputService.InputChanged:Connect(function(input)
+    if not statusDrag then return end
+    if statusDrag.Input.UserInputType == Enum.UserInputType.Touch then
+        if input ~= statusDrag.Input then return end
+    elseif input.UserInputType ~= Enum.UserInputType.MouseMovement then return end
+    local delta = Vector2.new(input.Position.X, input.Position.Y) - statusDrag.Pointer
+    if not statusDrag.Moved then
+        if delta.Magnitude <= 5 then return end
+        statusDrag.Moved = true
+        performanceEntrance:Cancel()
+    end
+    local point = statusDrag.Origin + delta
+    performanceBar.Position = UDim2.fromOffset(point.X, point.Y)
+    clampStatus()
+end))
+table.insert(dragConnections, UserInputService.InputEnded:Connect(function(input)
+    if statusDrag and input == statusDrag.Input then statusDrag = nil end
+end))
+table.insert(dragConnections, UserInputService.WindowFocusReleased:Connect(function() statusDrag = nil end))
 local startedAt = os.clock()
 local frameCount = 0
 local sampleTime = 0
@@ -4499,11 +4659,24 @@ table.insert(dragConnections, RunService.RenderStepped:Connect(function(delta)
     local seconds = math.floor(os.clock() - startedAt)
     local timer = string.format("%02d:%02d:%02d", math.floor(seconds / 3600), math.floor(seconds / 60) % 60, seconds % 60)
     local pingText = pingOk and type(ping) == "number" and tostring(math.floor(ping + 0.5)) .. " ms" or "--"
-    performanceText.Text = string.format("FPS: %d  |  PING: %s  |  TIMER: %s", fps, pingText, timer)
+    local active = {}
+    for _, entry in statusToggles do
+        if entry.Handle.Instance.Parent and entry.Handle:Get() == true then table.insert(active, entry) end
+    end
+    table.sort(active, function(a, b)
+        if a.Priority ~= b.Priority then return a.Priority > b.Priority end
+        return a.Id < b.Id
+    end)
+    local names = {}
+    for index = 1, math.min(5, #active) do table.insert(names, active[index].Name) end
+    if #active > 5 then table.insert(names, "+" .. (#active - 5) .. " more") end
+    performanceText.Text = string.format("FPS: %d  |  PING: %s  |  TIMER: %s\nSTATUS: %s\nACTIVE: %s",
+        fps, pingText, timer, statusMessage or (#active > 0 and "Running" or "Idle"), #names > 0 and table.concat(names, ", ") or "None")
 end))
 
 local function endDrag()
     dragInput, dragStart, windowStart = nil, nil, nil
+    windowDragMoved = false
 end
 
 local function updateBounds()
@@ -4511,9 +4684,10 @@ local function updateBounds()
     endDrag()
     cancelSlide()
     local screen, designed, padding = layoutMetrics()
-    viewportScale.Scale = math.min(1,
+    local preferredScale = type(initialOptions.Scale) == "number" and initialOptions.Scale or 1.3
+    viewportScale.Scale = math.min(math.clamp(preferredScale, 0.5, 2),
         math.max(1, screen.X - padding * 2) / math.max(1, designed.X),
-        math.max(1, screen.Y - padding * 2) / math.max(1, designed.Y + 38))
+        math.max(1, screen.Y - padding * 2) / math.max(1, designed.Y))
     window.Position = clampPosition(window.Position)
 end
 
@@ -4525,6 +4699,7 @@ table.insert(dragConnections, dragArea.InputBegan:Connect(function(input)
         dragInput = input
         dragStart = Vector2.new(input.Position.X, input.Position.Y)
         windowStart = window.Position
+        windowDragMoved = false
     end
 end))
 
@@ -4534,6 +4709,8 @@ table.insert(dragConnections, UserInputService.InputChanged:Connect(function(inp
         and input.UserInputType == Enum.UserInputType.MouseMovement
     if not mouseDrag and input ~= dragInput then return end
     local delta = Vector2.new(input.Position.X, input.Position.Y) - dragStart
+    if not windowDragMoved and delta.Magnitude <= 5 then return end
+    windowDragMoved = true
     slideTo(windowStart + UDim2.fromOffset(delta.X, delta.Y), 0.12)
 end))
 
@@ -4580,6 +4757,10 @@ type TabEntry = {
     Icon: ImageLabel,
     Label: TextLabel,
     Indicator: Frame,
+    Row: Frame,
+    Topics: {any},
+    SelectedTopic: any?,
+    Expanded: boolean,
 }
 local tabs: { [string]: TabEntry } = {}
 local selectedTab: TabEntry?
@@ -4652,6 +4833,7 @@ local function animateTabContent(page)
         end)
     end
     for _, column in page:GetChildren() do
+        if not column:IsA("ScrollingFrame") or not column.Visible then continue end
         local sections = {}
         for _, section in column:GetChildren() do
             if section:IsA("Frame") then table.insert(sections, section) end
@@ -4675,6 +4857,37 @@ local function animateTabContent(page)
     end
 end
 
+local navigationTweens = setmetatable({}, {__mode = "k"})
+local function animateNavigation(object, goals)
+    if navigationTweens[object] then navigationTweens[object]:Cancel() end
+    local animation = TweenService:Create(object,
+        TweenInfo.new(0.22, Enum.EasingStyle.Quint, Enum.EasingDirection.Out), goals)
+    navigationTweens[object] = animation
+    animation:Play()
+end
+
+local function expandTab(tab, expanded)
+    tab.Expanded = expanded
+    animateNavigation(tab.Row, {Size = UDim2.new(1, 0, 0,
+        34 + (expanded and #tab.Topics * 30 + (#tab.Topics > 0 and 6 or 0) or 0))})
+    for _, topic in tab.Topics do topic.Button.Visible = expanded end
+end
+
+local function selectTopic(tab, topic)
+    tab.SelectedTopic = topic
+    tab.Page:SetAttribute("SelectedTopic", topic.Id)
+    for _, entry in tab.Topics do
+        local active = entry == topic
+        entry.Column.Visible = active
+        animateNavigation(entry.Button, {BackgroundTransparency = active and 0.72 or 1})
+        animateNavigation(entry.Label, {TextColor3 = active and activeColor or inactiveColor,
+            Position = UDim2.fromOffset(active and 28 or 25, 0)})
+        animateNavigation(entry.Marker, {Size = UDim2.fromOffset(4, active and 18 or 0),
+            BackgroundTransparency = active and 0 or 1})
+    end
+    if selectedTab == tab then animateTabContent(tab.Page) end
+end
+
 local function selectTab(tab)
     if selectedTab == tab then return end
     selectedTab = tab
@@ -4682,6 +4895,7 @@ local function selectTab(tab)
     for _, entry in tabs do
         local selected = entry == tab
         entry.Page.Visible = selected
+        expandTab(entry, selected)
         local indicator = entry.Indicator
         if indicatorTweens[indicator] then indicatorTweens[indicator]:Cancel() end
         indicator.Visible = true
@@ -4694,7 +4908,7 @@ local function selectTab(tab)
         animation:Play()
         entry.Button.BackgroundTransparency = selected and 0.72 or 0.88
     end
-    animateTabContent(tab.Page)
+    if tab.SelectedTopic then selectTopic(tab, tab.SelectedTopic) else animateTabContent(tab.Page) end
 end
 
 local function createTab(options, order)
@@ -4713,10 +4927,12 @@ local function createTab(options, order)
     local row = Instance.new("Frame")
     row.Name = options.Id .. "Row"
     row.BackgroundTransparency = 1
+    row.BorderSizePixel = 0
+    row.ClipsDescendants = true
     row.Size = button.Size
     row.LayoutOrder = order
     row.Parent = navigation
-    button.Size = UDim2.fromScale(1, 1)
+    button.Size = UDim2.new(1, 0, 0, 34)
     button.Position = UDim2.fromOffset(48, 0)
     button.Visible = false
     button.Parent = row
@@ -4782,26 +4998,30 @@ local function createTab(options, order)
     page:SetAttribute("Icon", options.Icon)
     page.Parent = content
 
-    local tab: TabEntry = { Id = options.Id, Button = button, Page = page, Icon = icon, Label = label, Indicator = indicator }
+    local tab: TabEntry = { Id = options.Id, Button = button, Page = page, Icon = icon, Label = label, Indicator = indicator,
+        Row = row, Topics = {}, Expanded = false }
     tabs[options.Id] = tab
     table.insert(dragConnections, button.Activated:Connect(function()
-        selectTab(tab)
+        if selectedTab == tab then expandTab(tab, not tab.Expanded) else selectTab(tab) end
     end))
     return tab
 end
 
 local function createSection(tabId, side, title, iconName)
     assert(side == 1 or side == 2, "Section side must be 1 or 2")
-    local page = assert(tabs[tabId], "Unknown tab: " .. tabId).Page
-    local columnName = "Column" .. tostring(side)
+    local tab = assert(tabs[tabId], "Unknown tab: " .. tabId)
+    local page = tab.Page
+    local topicIndex = #tab.Topics + 1
+    local columnName = "Topic" .. tostring(topicIndex)
     local column = page:FindFirstChild(columnName)
     if not column then
         local scrolling = Instance.new("ScrollingFrame")
         scrolling.Name = columnName
         scrolling.BackgroundTransparency = 1
         scrolling.BorderSizePixel = 0
-        scrolling.Position = UDim2.new((side - 1) * 0.5, side == 2 and 6 or 0, 0, 0)
-        scrolling.Size = UDim2.new(0.5, -6, 1, 0)
+        scrolling.Position = UDim2.fromOffset(0, 0)
+        scrolling.Size = UDim2.fromScale(1, 1)
+        scrolling.Visible = false
         scrolling.CanvasSize = UDim2.new()
         scrolling.AutomaticCanvasSize = Enum.AutomaticSize.Y
         scrolling.ScrollBarThickness = 0
@@ -4858,6 +5078,53 @@ local function createSection(tabId, side, title, iconName)
     layout.SortOrder = Enum.SortOrder.LayoutOrder
     layout.Padding = UDim.new(0, 1)
     layout.Parent = body
+
+    local topicButton = Instance.new("TextButton")
+    topicButton.Name = "Topic" .. topicIndex
+    topicButton.Text = ""
+    topicButton.Position = UDim2.fromOffset(12, 37 + (topicIndex - 1) * 30)
+    topicButton.Size = UDim2.new(1, -12, 0, 28)
+    topicButton.BackgroundColor3 = Color3.fromRGB(35, 35, 38)
+    topicButton.BackgroundTransparency = 1
+    topicButton.BorderSizePixel = 0
+    topicButton.AutoButtonColor = false
+    topicButton.Visible = tab.Expanded
+    topicButton.Parent = tab.Row
+    local topicCorner = Instance.new("UICorner")
+    topicCorner.CornerRadius = UDim.new(0, 5)
+    topicCorner.Parent = topicButton
+    local marker = Instance.new("Frame")
+    marker.Name = "Selected"
+    marker.AnchorPoint = Vector2.new(0, 0.5)
+    marker.Size = UDim2.fromOffset(4, 0)
+    marker.Position = UDim2.fromOffset(10, 14)
+    marker.BackgroundTransparency = 1
+    marker.BackgroundColor3 = accentColor
+    marker.BorderSizePixel = 0
+    marker.Parent = topicButton
+    local markerCorner = Instance.new("UICorner")
+    markerCorner.CornerRadius = UDim.new(1, 0)
+    markerCorner.Parent = marker
+    local topicLabel = Instance.new("TextLabel")
+    topicLabel.Name = "Title"
+    topicLabel.BackgroundTransparency = 1
+    topicLabel.Position = UDim2.fromOffset(28, 0)
+    topicLabel.Size = UDim2.new(1, -36, 1, 0)
+    topicLabel.FontFace = tabFont
+    topicLabel.TextSize = 13
+    topicLabel.Text = title
+    topicLabel.TextColor3 = inactiveColor
+    topicLabel.TextXAlignment = Enum.TextXAlignment.Left
+    topicLabel.TextTruncate = Enum.TextTruncate.AtEnd
+    topicLabel.Parent = topicButton
+    local topic = {Id = columnName, Column = column, Button = topicButton, Label = topicLabel, Marker = marker}
+    table.insert(tab.Topics, topic)
+    table.insert(dragConnections, topicButton.Activated:Connect(function()
+        selectTab(tab)
+        selectTopic(tab, topic)
+    end))
+    expandTab(tab, selectedTab == tab)
+    if not tab.SelectedTopic then selectTopic(tab, topic) end
     return body
 end
 
@@ -5343,9 +5610,9 @@ local function createSlider(parent, options)
     corner.Parent = input
     local trackButton = Instance.new("TextButton")
     trackButton.Name = "Track"
-    trackButton.AnchorPoint = Vector2.new(0, 0.5)
-    trackButton.Position = UDim2.new(0.45, 0, 0.5, 0)
-    trackButton.Size = UDim2.new(0.55, -50, 0, 26)
+    trackButton.AnchorPoint = Vector2.new(1, 0.5)
+    trackButton.Position = UDim2.new(1, -50, 0.5, 0)
+    trackButton.Size = UDim2.new(0.4, -50, 0, 26)
     trackButton.BackgroundTransparency = 1
     trackButton.Text = ""
     trackButton.AutoButtonColor = false
@@ -6048,37 +6315,35 @@ searchIcon.Parent = searchClip
 searchIcon.Position = UDim2.new(0, 8, 0.5, 0)
 searchPadding:Destroy()
 search.BackgroundTransparency = 1
-local searchViewport = Instance.new("ScrollingFrame")
+local searchViewport = Instance.new("Frame")
 searchViewport.Name = "TextViewport"
 searchViewport.Position = UDim2.fromOffset(30, 0)
 searchViewport.Size = UDim2.new(1, -38, 1, 0)
 searchViewport.BackgroundTransparency = 1
 searchViewport.BorderSizePixel = 0
-searchViewport.ScrollBarThickness = 0
-searchViewport.ScrollingDirection = Enum.ScrollingDirection.X
-searchViewport.CanvasSize = UDim2.new()
 searchViewport.ClipsDescendants = true
 searchViewport.Parent = searchClip
 search.Parent = searchViewport
 local textService: any = game:GetService("TextService")
+local searchOffset = 0
 local function updateSearchScroll()
-    local available = searchViewport.AbsoluteSize.X
+    local available = searchViewport.AbsoluteSize.X / math.max(viewportScale.Scale, 0.01)
     if available < 1 then return end
     local function measure(text)
         return textService:GetTextSize(text, search.TextSize, Enum.Font.Roboto, Vector2.new(100000, 28)).X
     end
     local width = math.max(available, measure(search.Text) + 8)
     search.Size = UDim2.new(0, width, 1, 0)
-    searchViewport.CanvasSize = UDim2.fromOffset(width, 0)
     if search:IsFocused() and search.CursorPosition > 0 then
         local caret = measure(search.Text:sub(1, search.CursorPosition - 1))
-        local offset = searchViewport.CanvasPosition.X
+        local offset = searchOffset
         if caret > offset + available - 6 then offset = caret - available + 6 end
         if caret < offset + 2 then offset = math.max(0, caret - 2) end
-        searchViewport.CanvasPosition = Vector2.new(math.clamp(offset, 0, math.max(0, width - available)), 0)
+        searchOffset = math.clamp(offset, 0, math.max(0, width - available))
     else
-        searchViewport.CanvasPosition = Vector2.zero
+        searchOffset = 0
     end
+    search.Position = UDim2.fromOffset(-searchOffset, 0)
 end
 table.insert(dragConnections, search:GetPropertyChangedSignal("Text"):Connect(updateSearchScroll))
 table.insert(dragConnections, search:GetPropertyChangedSignal("CursorPosition"):Connect(updateSearchScroll))
@@ -6112,6 +6377,9 @@ local function navigateToComponent(tab, column, component)
     search.Text = ""
     if closeActiveDropdown then closeActiveDropdown() end
     selectTab(tab)
+    for _, topic in tab.Topics do
+        if topic.Column == column then selectTopic(tab, topic) break end
+    end
     highlightId += 1
     local id = highlightId
     task.delay(0.8, function()
@@ -6340,7 +6608,7 @@ local floatingButton = Instance.new("ImageButton")
 floatingButton.Name = "ToggleWindow"
 floatingButton.AnchorPoint = Vector2.new(0, 0.5)
 floatingButton.Position = UDim2.new(0, 12, 0.5, 0)
-floatingButton.Size = UDim2.fromOffset(42, 42)
+floatingButton.Size = UDim2.fromOffset(64, 64)
 floatingButton.BackgroundColor3 = Color3.fromRGB(9, 9, 11)
 floatingButton.BackgroundTransparency = 0.12
 floatingButton.BorderSizePixel = 0
@@ -6351,7 +6619,7 @@ floatingButton.ZIndex = 80
 floatingButton.Visible = false
 floatingButton.Parent = floatingGui
 local floatingCorner = Instance.new("UICorner")
-floatingCorner.CornerRadius = UDim.new(0, 10)
+floatingCorner.CornerRadius = UDim.new(0, 14)
 floatingCorner.Parent = floatingButton
 local windowShown = true
 local visibilityId = 0
@@ -6392,6 +6660,13 @@ local floatingDragStart
 local floatingDragOrigin
 local floatingMoved = false
 local suppressFloatingClickUntil = 0
+local function floatingPosition()
+    local screen = floatingGui.AbsoluteSize
+    local size = floatingButton.AbsoluteSize
+    return Vector2.new(
+        floatingButton.Position.X.Scale * screen.X + floatingButton.Position.X.Offset - floatingButton.AnchorPoint.X * size.X,
+        floatingButton.Position.Y.Scale * screen.Y + floatingButton.Position.Y.Offset - floatingButton.AnchorPoint.Y * size.Y)
+end
 local function clampFloating(position)
     local screen = floatingGui.AbsoluteSize
     local size = floatingButton.AbsoluteSize
@@ -6403,7 +6678,7 @@ table.insert(dragConnections, floatingButton.InputBegan:Connect(function(input)
     if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
         floatingDragInput = input
         floatingDragStart = Vector2.new(input.Position.X, input.Position.Y)
-        floatingDragOrigin = floatingButton.AbsolutePosition
+        floatingDragOrigin = floatingPosition()
         floatingMoved = false
     end
 end))
@@ -6427,11 +6702,17 @@ table.insert(dragConnections, UserInputService.InputEnded:Connect(function(input
     end
 end))
 table.insert(dragConnections, floatingGui:GetPropertyChangedSignal("AbsoluteSize"):Connect(function()
-    local position = clampFloating(floatingButton.AbsolutePosition)
+    local position = clampFloating(floatingPosition())
     floatingButton.AnchorPoint = Vector2.zero
     floatingButton.Position = UDim2.fromOffset(position.X, position.Y)
 end))
+table.insert(dragConnections, UserInputService.WindowFocusReleased:Connect(function()
+    floatingDragInput = nil
+    floatingMoved = false
+    suppressFloatingClickUntil = os.clock() + 0.2
+end))
 table.insert(dragConnections, floatingButton.Activated:Connect(function()
+    playUISound("click")
     if os.clock() >= suppressFloatingClickUntil then toggleWindow() end
 end))
 table.insert(dragConnections, UserInputService.InputBegan:Connect(function(input)
@@ -6475,6 +6756,48 @@ end
 table.insert(dragConnections, closeButton.Activated:Connect(function()
     if windowShown then toggleWindow() end
 end))
+local modalBackdrop = Instance.new("TextButton")
+modalBackdrop.Name = "MenuBackdrop"
+modalBackdrop.Size = UDim2.fromScale(1, 1)
+modalBackdrop.BackgroundColor3 = Color3.new(0, 0, 0)
+modalBackdrop.BackgroundTransparency = 1
+modalBackdrop.BorderSizePixel = 0
+modalBackdrop.Text = ""
+modalBackdrop.AutoButtonColor = false
+modalBackdrop.Visible = false
+modalBackdrop.ZIndex = 35
+modalBackdrop.Parent = window
+objects[3]:Clone().Parent = modalBackdrop
+local menuBlur = Instance.new("BlurEffect")
+menuBlur.Name = "LowyxMenuBlur"
+menuBlur.Size = 0
+menuBlur.Parent = game:GetService("Lighting")
+local modalStates = {}
+local backdropRevision = 0
+local backdropTween
+local blurTween
+local function setModalBackdrop(name, state)
+    modalStates[name] = state
+    local active = modalStates.settings or modalStates.info
+    backdropRevision += 1
+    local revision = backdropRevision
+    if backdropTween then backdropTween:Cancel() end
+    if blurTween then blurTween:Cancel() end
+    if active then modalBackdrop.Visible = true end
+    backdropTween = TweenService:Create(modalBackdrop, TweenInfo.new(0.22),
+        {BackgroundTransparency = active and 0.35 or 1})
+    blurTween = TweenService:Create(menuBlur, TweenInfo.new(0.22), {Size = active and 16 or 0})
+    backdropTween:Play()
+    blurTween:Play()
+    if not active then task.delay(0.22, function()
+        if revision == backdropRevision then modalBackdrop.Visible = false end
+    end) end
+end
+table.insert(dragConnections, modalBackdrop.Activated:Connect(function()
+    if closeSettingsPanel then closeSettingsPanel() end
+    if closeInfoPanel then closeInfoPanel() end
+end))
+table.insert(dragConnections, gui.Destroying:Connect(function() menuBlur:Destroy() end))
 local settingsPanel = Instance.new("Frame")
 settingsPanel.Name = "InterfaceSettings"
 settingsPanel.Size = UDim2.fromOffset(300, 0)
@@ -6483,7 +6806,9 @@ settingsPanel.BorderSizePixel = 0
 settingsPanel.ClipsDescendants = true
 settingsPanel.Visible = false
 settingsPanel.ZIndex = 40
-settingsPanel.Parent = gui
+settingsPanel.AnchorPoint = Vector2.new(0.5, 0.5)
+settingsPanel.Position = UDim2.fromScale(0.5, 0.5)
+settingsPanel.Parent = window
 objects[3]:Clone().Parent = settingsPanel
 objects[5]:Clone().Parent = settingsPanel
 local settingsHeading = Instance.new("TextLabel")
@@ -6510,6 +6835,10 @@ local settingsLayout = Instance.new("UIListLayout")
 settingsLayout.SortOrder = Enum.SortOrder.LayoutOrder
 settingsLayout.Padding = UDim.new(0, 4)
 settingsLayout.Parent = settingsBody
+createButton(settingsBody, {Title = "Show Status Panel", Callback = function()
+    performanceBar.Visible = true
+    clampStatus()
+end})
 local applyingTheme = false
 local function applyUITheme()
     if applyingTheme then return end
@@ -6579,6 +6908,14 @@ createToggle(settingsBody, {
     end,
 })
 createToggle(settingsBody, {
+    Title = "UI Sounds", Description = "Loading and component feedback.", Default = UIPreferences.Sounds,
+    Callback = function(value)
+        UIPreferences.Sounds = value
+        if value then playUISound("click") end
+        saveUIPreferences()
+    end,
+})
+createToggle(settingsBody, {
     Title = "Colorful Letters", Description = "Apply the accent color to text.", Default = UIPreferences.ColorfulLetters,
     Callback = function(value)
         UIPreferences.ColorfulLetters = value
@@ -6608,38 +6945,23 @@ local settingsMoveAnimation
 local settingsGoal
 local settingsRevision = 0
 local function placeSettings()
-    local screen = gui.AbsoluteSize
-    local position, size = window.AbsolutePosition, window.AbsoluteSize
-    local x = position.X + size.X + 10
-    if x + 300 > screen.X - 8 then x = position.X - 310 end
-    x = math.clamp(x, 8, math.max(8, screen.X - 308))
-    local height = math.min(480, screen.Y - 24)
-    local y = math.clamp(position.Y, 8, math.max(8, screen.Y - height - 8))
-    local goal = Vector2.new(x, y)
-    if not settingsGoal or not settingsPanel.Visible then
-        settingsPanel.Position = UDim2.fromOffset(x, y)
-    elseif (goal - settingsGoal).Magnitude > 1 then
-        if settingsMoveAnimation then settingsMoveAnimation:Cancel() end
-        settingsMoveAnimation = TweenService:Create(settingsPanel,
-            TweenInfo.new(0.25, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
-            { Position = UDim2.fromOffset(x, y) })
-        settingsMoveAnimation:Play()
-    end
-    settingsGoal = goal
-    return height
+    local size = window.AbsoluteSize / math.max(viewportScale.Scale, 0.01)
+    settingsPanel.Position = UDim2.fromScale(0.5, 0.5)
+    return math.max(1, math.min(480, size.Y - 32)), math.max(1, math.min(360, size.X - 32))
 end
 local function setSettingsOpen(state)
     if state and closeInfoPanel then closeInfoPanel() end
     settingsOpen = state
+    setModalBackdrop("settings", state)
     settingsRevision += 1
     local revision = settingsRevision
     if settingsAnimation then settingsAnimation:Cancel() end
-    local height = placeSettings()
+    local height, width = placeSettings()
     if state then settingsPanel.Visible = true end
     settingsButton.ImageColor3 = state and accentColor or inactiveColor
     settingsAnimation = TweenService:Create(settingsPanel,
         TweenInfo.new(0.28, Enum.EasingStyle.Quint, Enum.EasingDirection.Out),
-        { Size = UDim2.fromOffset(300, state and height or 0) })
+        { Size = UDim2.fromOffset(width, state and height or 0) })
     settingsAnimation:Play()
     if not state then
         if closeActiveDropdown then closeActiveDropdown() end
@@ -6674,7 +6996,9 @@ infoPanel.BorderSizePixel = 0
 infoPanel.ClipsDescendants = true
 infoPanel.Visible = false
 infoPanel.ZIndex = 40
-infoPanel.Parent = gui
+infoPanel.AnchorPoint = Vector2.new(0.5, 0.5)
+infoPanel.Position = UDim2.fromScale(0.5, 0.5)
+infoPanel.Parent = window
 objects[3]:Clone().Parent = infoPanel
 objects[5]:Clone().Parent = infoPanel
 local infoTitle = Instance.new("TextLabel")
@@ -6750,18 +7074,13 @@ local infoOpen = false
 local infoTween
 local infoRevision = 0
 local function placeInfo()
-    local screen = gui.AbsoluteSize
-    local position, size = window.AbsolutePosition, window.AbsoluteSize
-    local x = position.X + size.X + 10
-    if x + 300 > screen.X - 8 then x = position.X - 310 end
-    infoPanel.Position = UDim2.fromOffset(
-        math.clamp(x, 8, math.max(8, screen.X - 308)),
-        math.clamp(position.Y, 8, math.max(8, screen.Y - 180)))
+    infoPanel.Position = UDim2.fromScale(0.5, 0.5)
 end
 local function setInfoOpen(state)
     if state and settingsOpen then setSettingsOpen(false) end
     if state and closeActiveDropdown then closeActiveDropdown() end
     infoOpen = state
+    setModalBackdrop("info", state)
     infoRevision += 1
     local revision = infoRevision
     if infoTween then infoTween:Cancel() end
@@ -6976,6 +7295,7 @@ task.spawn(function()
         window.Visible = true
         headerStartedAt = os.clock()
         introFinished = true
+        playUISound("ready")
     if selectedTab then animateTabContent(selectedTab.Page) end
         floatingButton.Visible = true
         applyUITheme()
@@ -7037,6 +7357,7 @@ task.spawn(function()
     search.Visible = true
     headerStartedAt = os.clock()
     introFinished = true
+    playUISound("ready")
     if selectedTab then animateTabContent(selectedTab.Page) end
     floatingButton.Visible = true
     performanceEntrance:Play()
@@ -7046,6 +7367,7 @@ task.spawn(function()
     applyUITheme()
 end)
 gui.Destroying:Connect(function()
+    statusGui:Destroy()
     if settingsAnimation then settingsAnimation:Cancel() end
     if settingsMoveAnimation then settingsMoveAnimation:Cancel() end
     floatingGui:Destroy()
@@ -7122,6 +7444,16 @@ end
 
 local api: any = {Gui = gui, Window = window, FloatingGui = floatingGui, FloatingToggle = floatingButton,
     Config = {Tabs = {}}, Components = {}, Icons = NebulaSymbols, Version = "Lowyx-1"}
+api.StatusPanel = performanceBar
+function api.SetStatus(first, second)
+    local message = second
+    if first ~= api then message = first end
+    statusMessage = message ~= nil and tostring(message) or nil
+end
+function api.ShowStatus()
+    performanceBar.Visible = true
+    clampStatus()
+end
 local changed = Instance.new("BindableEvent")
 changed.Name = "ComponentChanged"
 changed.Parent = gui
@@ -7202,6 +7534,7 @@ makeComponent = function(body, props, prefix)
         value = nextValue
         if kind == "ColorPicker" then color = nextValue end
         if not muted then
+            playUISound((kind == "Slider" or kind == "ColorPicker") and "tick" or "click")
             changed:Fire(prefix, nextValue)
             if userCallback then userCallback(nextValue) end
         end
@@ -7235,6 +7568,22 @@ makeComponent = function(body, props, prefix)
         if kind == "Button" then return nil end
         if kind == "Paragraph" then return props.Description end
         return native.Get and native.Get() or value
+    end
+    if kind == "Toggle" or kind == "IconToggle" or kind == "ColorToggle" then
+        local name = tostring(props.Name or props.Title or "Toggle")
+        local lower = name:lower()
+        local primary = props.ShowInStatus == true
+        if props.ShowInStatus == nil then
+            primary = lower:find("auto", 1, true) ~= nil or lower:find("farm", 1, true) ~= nil
+                or lower:find("kaitun", 1, true) ~= nil or lower:find("run ", 1, true) ~= nil
+            for _, setting in {"save", "load", "animation", "color", "notification"} do
+                if lower:find(setting, 1, true) then primary = false break end
+            end
+        end
+        if primary then
+            statusToggles[prefix] = {Id = prefix, Handle = handle, Name = name, Priority = tonumber(props.StatusPriority) or 0}
+            row.Destroying:Connect(function() statusToggles[prefix] = nil end)
+        end
     end
     function handle:Set(nextValue, silent)
         uiAccess()
@@ -7453,6 +7802,7 @@ function api:AddTab(config)
         return section
     end
     function tab:AddSeparator(options) return api:AddSeparator(options) end
+    tab.AddTopic = tab.AddSection
     if not selectedTab then selectTab(nativeTab) end
     return tab
 end
@@ -7576,7 +7926,11 @@ function api.Toggle()
     toggleWindow()
     return api
 end
-function api.Destroy() if gui.Parent then gui:Destroy() end end
+function api.Destroy()
+    if statusGui.Parent then statusGui:Destroy() end
+    if floatingGui.Parent then floatingGui:Destroy() end
+    if gui.Parent then gui:Destroy() end
+end
 api.Destroyed = gui.Destroying
 api.OnDestroy = function(_, callback) return gui.Destroying:Connect(callback) end
 local environment = ((getgenv or getfenv) :: any)()
