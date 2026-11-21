@@ -4730,12 +4730,23 @@ table.insert(dragConnections, window:GetPropertyChangedSignal("AnchorPoint"):Con
 objects[6].Text = Configuration.Title
 objects[7].Text = Configuration.Description
 
-local navigation = Instance.new("Frame")
+local navigation = Instance.new("ScrollingFrame")
 navigation.Name = "Tabs"
 navigation.BackgroundTransparency = 1
 navigation.BorderSizePixel = 0
 navigation.Position = UDim2.fromOffset(10, 92)
 navigation.Size = UDim2.new(0, 182, 1, -108)
+navigation.ClipsDescendants = true
+navigation.Active = true
+navigation.ScrollingEnabled = true
+navigation.ScrollingDirection = Enum.ScrollingDirection.Y
+navigation.CanvasSize = UDim2.new()
+navigation.AutomaticCanvasSize = Enum.AutomaticSize.Y
+navigation.ScrollBarThickness = 3
+navigation.ScrollBarImageColor3 = Color3.fromRGB(95, 95, 100)
+navigation.ScrollBarImageTransparency = 0.4
+navigation.VerticalScrollBarInset = Enum.ScrollBarInset.ScrollBar
+navigation.ElasticBehavior = Enum.ElasticBehavior.WhenScrollable
 navigation.Parent = window
 local tabLayout = Instance.new("UIListLayout")
 tabLayout.SortOrder = Enum.SortOrder.LayoutOrder
