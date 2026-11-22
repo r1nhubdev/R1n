@@ -434,7 +434,7 @@ local function lowyxAsset(path, fallback)
 end
 local UIPreferences = {
     Transparency = 0, Keybind = "LeftControl", Animations = true, Loading = true,
-    Color = { 245, 245, 245 }, ColorfulLetters = false, Sounds = true,
+    Color = { 245, 245, 245 }, ColorfulLetters = false, Sounds = true, Theme = "Glass",
 }
 pcall(function()
     local saved = game:GetService("HttpService"):JSONDecode(readfile(initialOptions.SettingsFile or "Lowyx/UISettings.json"))
@@ -444,6 +444,7 @@ pcall(function()
 end)
 if initialOptions.LoadingScreen ~= nil then UIPreferences.Loading = initialOptions.LoadingScreen end
 if initialOptions.Animations ~= nil then UIPreferences.Animations = initialOptions.Animations end
+if initialOptions.Theme == "Glass" or initialOptions.Theme == "Classic" then UIPreferences.Theme=initialOptions.Theme end
 if initialOptions.Sounds ~= nil then UIPreferences.Sounds = initialOptions.Sounds == true end
 if initialOptions.Keybind ~= nil then
     UIPreferences.Keybind = typeof(initialOptions.Keybind) == "EnumItem" and initialOptions.Keybind.Name or initialOptions.Keybind
@@ -6850,6 +6851,19 @@ createButton(settingsBody, {Title = "Show Status Panel", Callback = function()
     performanceBar.Visible = true
     clampStatus()
 end})
+local glassStyle = {Base=setmetatable({}, {__mode="k"}), Gradient=objects[5].Color, WindowColor=window.BackgroundColor3}
+glassStyle.Blur=Instance.new("BlurEffect")
+glassStyle.Blur.Name="LowyxGlassBlur";glassStyle.Blur.Size=7;glassStyle.Blur.Enabled=false
+glassStyle.Blur.Parent=game:GetService("Lighting")
+glassStyle.Border=Instance.new("UIStroke")
+glassStyle.Border.Name="GlassBorder";glassStyle.Border.Color=Color3.fromRGB(215,225,240)
+glassStyle.Border.Thickness=1;glassStyle.Border.Transparency=0.7;glassStyle.Border.Enabled=false;glassStyle.Border.Parent=window
+local function syncGlassBlur()
+    glassStyle.Blur.Enabled=UIPreferences.Theme=="Glass" and gui.Enabled and window.Visible
+end
+table.insert(dragConnections,window:GetPropertyChangedSignal("Visible"):Connect(syncGlassBlur))
+table.insert(dragConnections,gui:GetPropertyChangedSignal("Enabled"):Connect(syncGlassBlur))
+table.insert(dragConnections,gui.Destroying:Connect(function()glassStyle.Blur:Destroy()end))
 local applyingTheme = false
 local function applyUITheme()
     if applyingTheme then return end
@@ -6877,8 +6891,33 @@ local function applyUITheme()
         end
     end
     local alpha = math.clamp(UIPreferences.Transparency / 100, 0, 0.85)
-    window.BackgroundTransparency = alpha
-    settingsPanel.BackgroundTransparency = alpha
+    local glass=UIPreferences.Theme=="Glass"
+    window:SetAttribute("Theme",UIPreferences.Theme)
+    window.BackgroundColor3=glass and Color3.fromRGB(37,43,55) or glassStyle.WindowColor
+    window.BackgroundTransparency = glass and math.max(0.28,alpha) or alpha
+    objects[5].Color=glass and ColorSequence.new({
+        ColorSequenceKeypoint.new(0,Color3.fromRGB(230,238,255)),
+        ColorSequenceKeypoint.new(0.48,Color3.fromRGB(130,145,170)),
+        ColorSequenceKeypoint.new(1,Color3.fromRGB(65,73,90))}) or glassStyle.Gradient
+    objects[5].Rotation=glass and 110 or 180
+    glassStyle.Border.Enabled=glass
+    syncGlassBlur()
+    for _,item in gui:GetDescendants() do
+        local section=item:IsA("Frame") and item:FindFirstChild("Content") and item:FindFirstChild("Title")
+        local surface=section or item==settingsPanel or item.Name=="InfoPanel" or item.Name:match("^DropdownPanel_")
+        if surface and item:IsA("GuiObject") then
+            local base=glassStyle.Base[item]
+            if not base then base={Color=item.BackgroundColor3,Alpha=item.BackgroundTransparency};glassStyle.Base[item]=base end
+            item.BackgroundColor3=glass and Color3.fromRGB(48,56,70) or base.Color
+            item.BackgroundTransparency=glass and (section and 0.48 or 0.14) or base.Alpha
+            if section then
+                local border=item:FindFirstChild("GlassBorder")
+                if not border and glass then border=Instance.new("UIStroke");border.Name="GlassBorder";border.Color=Color3.fromRGB(220,230,245);border.Transparency=0.87;border.Thickness=1;border.Parent=item end
+                if border then border.Enabled=glass end
+            end
+        end
+    end
+    settingsPanel.BackgroundTransparency = glass and 0.14 or alpha
     performanceBackground.BackgroundTransparency = alpha
     for _, item in gui:GetChildren() do
         if item.Name:match("^DropdownPanel_") then
@@ -6887,6 +6926,22 @@ local function applyUITheme()
     end
     applyingTheme = false
 end
+createDropdown(settingsBody, {
+    Title="Theme", Description="Choose the interface appearance.", Options={"Glass","Classic"}, Default=UIPreferences.Theme,
+    Callback=function(value)
+        UIPreferences.Theme=value=="Glass" and "Glass" or "Classic"
+        applyUITheme();saveUIPreferences()
+    end,
+})
+local glassRefreshQueued=false
+table.insert(dragConnections,gui.DescendantAdded:Connect(function(item)
+    if glassRefreshQueued or not item:IsA("GuiObject") then return end
+    glassRefreshQueued=true
+    task.defer(function()
+        glassRefreshQueued=false
+        if gui.Parent then applyUITheme() end
+    end)
+end))
 createSlider(settingsBody, {
     Title = "Transparency", Description = "Window background.", Min = 0, Max = 85,
     Default = UIPreferences.Transparency,
