@@ -4942,7 +4942,7 @@ local function createTab(options, order)
     row.BorderSizePixel = 0
     row.ClipsDescendants = true
     row.Size = button.Size
-    row.LayoutOrder = order
+    row.LayoutOrder = options.Order or order
     row.Parent = navigation
     button.Size = UDim2.new(1, 0, 0, 34)
     button.Position = UDim2.fromOffset(48, 0)
@@ -5019,7 +5019,7 @@ local function createTab(options, order)
     return tab
 end
 
-local function createSection(tabId, side, title, iconName)
+local function createSection(tabId, side, title, iconName, topicOrder)
     assert(side == 1 or side == 2, "Section side must be 1 or 2")
     local tab = assert(tabs[tabId], "Unknown tab: " .. tabId)
     local page = tab.Page
@@ -5129,8 +5129,10 @@ local function createSection(tabId, side, title, iconName)
     topicLabel.TextXAlignment = Enum.TextXAlignment.Left
     topicLabel.TextTruncate = Enum.TextTruncate.AtEnd
     topicLabel.Parent = topicButton
-    local topic = {Id = columnName, Column = column, Button = topicButton, Label = topicLabel, Marker = marker}
+    local topic = {Id = columnName, Column = column, Button = topicButton, Label = topicLabel, Marker = marker, Order=topicOrder or topicIndex, Serial=topicIndex}
     table.insert(tab.Topics, topic)
+    table.sort(tab.Topics,function(a,b)if a.Order~=b.Order then return a.Order<b.Order end return a.Serial<b.Serial end)
+    for index,entry in ipairs(tab.Topics) do entry.Button.Position=UDim2.fromOffset(12,37+(index-1)*30) end
     table.insert(dragConnections, topicButton.Activated:Connect(function()
         selectTab(tab)
         selectTopic(tab, topic)
@@ -7861,7 +7863,7 @@ function api:AddTab(config)
         sectionConfig.Components = sectionConfig.Components or {}
         table.insert(config.Sections, sectionConfig)
         sectionConfig.Icon = nebulaIcon(sectionConfig.Name, sectionConfig.Icon)
-        local body = createSection(config.Id, sectionConfig.Column, sectionConfig.Name, sectionConfig.Icon)
+        local body = createSection(config.Id, sectionConfig.Column, sectionConfig.Name, sectionConfig.Icon, sectionConfig.Order)
         local frame = body.Parent
         frame.Name = sectionConfig.Id
         frame.LayoutOrder = sectionConfig.Order or #config.Sections
