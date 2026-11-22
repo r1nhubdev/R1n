@@ -6908,12 +6908,13 @@ local function applyUITheme()
         if surface and item:IsA("GuiObject") then
             local base=glassStyle.Base[item]
             if not base then base={Color=item.BackgroundColor3,Alpha=item.BackgroundTransparency};glassStyle.Base[item]=base end
-            item.BackgroundColor3=glass and Color3.fromRGB(48,56,70) or base.Color
-            item.BackgroundTransparency=glass and (section and 0.48 or 0.14) or base.Alpha
+            item.BackgroundColor3=glass and (section and Color3.fromRGB(24,29,38) or Color3.fromRGB(48,56,70)) or base.Color
+            item.BackgroundTransparency=glass and (section and 0.88 or 0.14) or base.Alpha
             if section then
                 local border=item:FindFirstChild("GlassBorder")
-                if not border and glass then border=Instance.new("UIStroke");border.Name="GlassBorder";border.Color=Color3.fromRGB(220,230,245);border.Transparency=0.87;border.Thickness=1;border.Parent=item end
-                if border then border.Enabled=glass end
+                if border then border:Destroy() end
+                local corner=item:FindFirstChildOfClass("UICorner")
+                if corner then corner.CornerRadius=UDim.new(0,glass and 10 or 6) end
             end
         end
     end
