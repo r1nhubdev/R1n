@@ -6856,7 +6856,7 @@ glassStyle.Blur=Instance.new("BlurEffect")
 glassStyle.Blur.Name="LowyxGlassBlur";glassStyle.Blur.Size=7;glassStyle.Blur.Enabled=false
 glassStyle.Blur.Parent=game:GetService("Lighting")
 glassStyle.Border=Instance.new("UIStroke")
-glassStyle.Border.Name="GlassBorder";glassStyle.Border.Color=Color3.fromRGB(215,225,240)
+glassStyle.Border.Name="GlassBorder";glassStyle.Border.Color=Color3.fromRGB(220,220,220)
 glassStyle.Border.Thickness=1;glassStyle.Border.Transparency=0.7;glassStyle.Border.Enabled=false;glassStyle.Border.Parent=window
 local function syncGlassBlur()
     glassStyle.Blur.Enabled=UIPreferences.Theme=="Glass" and gui.Enabled and window.Visible
@@ -6893,12 +6893,12 @@ local function applyUITheme()
     local alpha = math.clamp(UIPreferences.Transparency / 100, 0, 0.85)
     local glass=UIPreferences.Theme=="Glass"
     window:SetAttribute("Theme",UIPreferences.Theme)
-    window.BackgroundColor3=glass and Color3.fromRGB(37,43,55) or glassStyle.WindowColor
+    window.BackgroundColor3=glass and Color3.fromRGB(20,20,20) or glassStyle.WindowColor
     window.BackgroundTransparency = glass and math.max(0.28,alpha) or alpha
     objects[5].Color=glass and ColorSequence.new({
-        ColorSequenceKeypoint.new(0,Color3.fromRGB(230,238,255)),
-        ColorSequenceKeypoint.new(0.48,Color3.fromRGB(130,145,170)),
-        ColorSequenceKeypoint.new(1,Color3.fromRGB(65,73,90))}) or glassStyle.Gradient
+        ColorSequenceKeypoint.new(0,Color3.fromRGB(235,235,235)),
+        ColorSequenceKeypoint.new(0.48,Color3.fromRGB(145,145,145)),
+        ColorSequenceKeypoint.new(1,Color3.fromRGB(70,70,70))}) or glassStyle.Gradient
     objects[5].Rotation=glass and 110 or 180
     glassStyle.Border.Enabled=glass
     syncGlassBlur()
@@ -6908,7 +6908,7 @@ local function applyUITheme()
         if surface and item:IsA("GuiObject") then
             local base=glassStyle.Base[item]
             if not base then base={Color=item.BackgroundColor3,Alpha=item.BackgroundTransparency};glassStyle.Base[item]=base end
-            item.BackgroundColor3=glass and (section and Color3.fromRGB(24,29,38) or Color3.fromRGB(48,56,70)) or base.Color
+            item.BackgroundColor3=glass and (section and Color3.fromRGB(15,15,15) or Color3.fromRGB(28,28,28)) or base.Color
             item.BackgroundTransparency=glass and (section and 0.88 or 0.14) or base.Alpha
             if section then
                 local border=item:FindFirstChild("GlassBorder")
