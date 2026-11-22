@@ -5346,8 +5346,8 @@ local function createDropdown(parent, options)
     local panel = Instance.new("Frame")
     panel.Name = "DropdownPanel_" .. row.Name
     panel.Size = UDim2.fromOffset(200, 0)
-    panel.BackgroundColor3 = window.BackgroundColor3
-    panel.BackgroundTransparency = window.BackgroundTransparency
+    panel.BackgroundColor3 = Color3.fromRGB(16,16,16)
+    panel.BackgroundTransparency = 0
     panel.BorderSizePixel = 0
     panel.ClipsDescendants = true
     panel.ZIndex = 50
@@ -6922,7 +6922,10 @@ local function applyUITheme()
     performanceBackground.BackgroundTransparency = alpha
     for _, item in gui:GetChildren() do
         if item.Name:match("^DropdownPanel_") then
-            item.BackgroundTransparency = alpha
+            item.BackgroundTransparency = 0
+            item.BackgroundColor3 = Color3.fromRGB(16,16,16)
+            local gradient=item:FindFirstChildOfClass("UIGradient")
+            if gradient then gradient.Enabled=false end
         end
     end
     applyingTheme = false
