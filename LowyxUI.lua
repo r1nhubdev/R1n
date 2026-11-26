@@ -68,7 +68,7 @@ function Library.new(config)
         BackgroundColor3 = COLORS.Surface,
         BorderSizePixel = 0,
         ClipsDescendants = true,
-        Position = UDim2.new(0.154593647, 391, 0.0885668248, 275),
+        Position = UDim2.new(0.5, 0, 0.5, 20),
         Size = UDim2.fromOffset(782, 511),
     }, screenGui)
     make("UICorner", {CornerRadius = UDim.new(0, 8)}, panel)
@@ -474,7 +474,17 @@ function Library.new(config)
         ZIndex = 4,
     }, topbar)
 
-    local windowScale = make("UIScale", {Scale = 0.78}, panel)
+    local function fitScale()
+        local camera = workspace.CurrentCamera
+        local viewport = camera and camera.ViewportSize or Vector2.new(1920, 1080)
+        local preferred = viewport.Y / 1000
+        local fits = math.min((viewport.X - 24) / 782, (viewport.Y - 24) / 511)
+        return math.clamp(math.min(preferred, fits), 0.6, 1.3)
+    end
+    self.Scale = fitScale()
+    self._scaled = {}
+    local windowScale = make("UIScale", {Scale = self.Scale * 0.78}, panel)
+    self.WindowScale = windowScale
     local entranceDone = false
     local dragging = false
     local dragType = nil
@@ -735,12 +745,46 @@ function Library.new(config)
         )
     end))
 
-    local finalPosition = UDim2.new(0.154593647, 391, 0.0885668248, 255)
+    local function applyScale()
+        local scale = fitScale()
+        if scale == self.Scale then
+            return
+        end
+        self.Scale = scale
+        if entranceDone then
+            windowScale.Scale = scale
+        end
+        for object in pairs(self._scaled) do
+            if object.Parent then
+                object.Scale = scale
+            else
+                self._scaled[object] = nil
+            end
+        end
+    end
+    local cameraConnection
+    local function watchCamera()
+        if cameraConnection then
+            cameraConnection:Disconnect()
+        end
+        local camera = workspace.CurrentCamera
+        if camera then
+            cameraConnection = camera:GetPropertyChangedSignal("ViewportSize"):Connect(applyScale)
+            table.insert(self._connections, cameraConnection)
+        end
+    end
+    watchCamera()
+    table.insert(self._connections, workspace:GetPropertyChangedSignal("CurrentCamera"):Connect(function()
+        watchCamera()
+        applyScale()
+    end))
+
+    local finalPosition = UDim2.fromScale(0.5, 0.5)
     tween(panel, 0.58, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {
         Position = finalPosition,
     })
     tween(windowScale, 0.64, Enum.EasingStyle.Back, Enum.EasingDirection.Out, {
-        Scale = 1,
+        Scale = self.Scale,
     })
 
     task.delay(0.68, function()
@@ -749,7 +793,7 @@ function Library.new(config)
         end
         panel.Position = finalPosition
         panel.Rotation = 0
-        windowScale:Destroy()
+        windowScale.Scale = self.Scale
         self._windowReady = true
         entranceDone = true
     end)
@@ -2243,6 +2287,7 @@ function Library:CreateDropdown(section, config)
         Size = UDim2.fromOffset(292, 0), Visible = false, ZIndex = 100,
     }, self.ScreenGui)
     make("UICorner", {CornerRadius = UDim.new(0, 7)}, popup)
+    self._scaled[make("UIScale", {Scale = self.Scale}, popup)] = true
     local popupStroke = make("UIStroke", {
         ApplyStrokeMode = Enum.ApplyStrokeMode.Border, Color = Color3.fromRGB(38, 38, 38),
         Thickness = 1, Transparency = 1,
@@ -2472,7 +2517,8 @@ function Library:CreateDropdown(section, config)
         local y = absolute.Y + card.AbsoluteSize.Y + (gap or 6)
         local camera = workspace.CurrentCamera
         local viewportHeight = camera and camera.ViewportSize.Y or 10000
-        if y + popupHeight > viewportHeight then y = absolute.Y - popupHeight - (gap or 6) end
+        local scaledHeight = popupHeight * window.Scale
+        if y + scaledHeight > viewportHeight then y = absolute.Y - scaledHeight - (gap or 6) end
         return UDim2.fromOffset(absolute.X, y)
     end
 
