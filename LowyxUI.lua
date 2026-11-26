@@ -668,9 +668,12 @@ function Library.new(config)
             BackgroundColor3 = Color3.fromRGB(10, 10, 10),
         })
     end))
-    table.insert(self._connections, UserInputService.InputBegan:Connect(function(input)
-        if input.KeyCode == Enum.KeyCode.LeftControl
-            or input.KeyCode == Enum.KeyCode.RightControl then
+    self.ToggleKey = config.ToggleKey or Enum.KeyCode.LeftControl
+    table.insert(self._connections, UserInputService.InputBegan:Connect(function(input, processed)
+        if processed or UserInputService:GetFocusedTextBox() then
+            return
+        end
+        if self.ToggleKey and input.KeyCode == self.ToggleKey then
             self:SetMinimized(not self.Minimized)
         end
     end))
@@ -1268,6 +1271,9 @@ function Library:CreateTab(config)
         if self._destroyed or not icon.Parent or not label.Parent then
             return
         end
+        -- tabs can be reordered after creation, so read the current row
+        finalIconPosition = UDim2.fromOffset(17, 86 + component.RowOffset)
+        finalLabelPosition = UDim2.fromOffset(47, 87 + component.RowOffset)
 
         tween(
             icon,
@@ -2175,71 +2181,67 @@ function Library:CreateLargeText(section, config)
     return component
 end
 
+function Library:_ResizeComponent(section, card, newHeight)
+    local oldHeight = card.AbsoluteSize.Y > 0 and card.Size.Y.Offset or card.Size.Y.Offset
+    if newHeight == oldHeight then
+        return
+    end
+    card.Size = UDim2.fromOffset(292, newHeight)
+    section.ComponentsHeight += newHeight - oldHeight
+    local spacing = math.max(0, #section.Components - 1) * 8
+    section.Container.Size = UDim2.fromOffset(292, section.ComponentsHeight + spacing)
+    section.Height = 30 + section.ComponentsHeight + spacing
+    section.Frame.Size = UDim2.fromOffset(292, section.Height)
+end
+
+local function regularFont(weight)
+    return Font.new("rbxasset://fonts/families/Roboto.json", weight or Enum.FontWeight.Regular, Enum.FontStyle.Normal)
+end
+
 function Library:CreateDropdown(section, config)
     assert(type(section) == "table" and section.Container, "CreateDropdown expects a section component")
     assert(type(config) == "table", "CreateDropdown expects a configuration table")
     assert(not self._destroyed, "Cannot create a dropdown after the UI is destroyed")
 
-    local optionNames, optionLookup = {}, {}
-    for _, option in ipairs(type(config.Options) == "table" and config.Options or {}) do
-        local name = tostring(option)
-        if not optionLookup[name] then
-            optionLookup[name] = true
-            table.insert(optionNames, name)
-        end
-    end
-    if #optionNames == 0 then
-        optionNames = {"Option 1", "Option 2", "Option 3"}
-        for _, name in ipairs(optionNames) do optionLookup[name] = true end
-    end
-
-    local popupHeight = #optionNames * 29 + 8
+    local window = self
+    local multi = config.Multi == true
+    local ROW, MAX_LIST = 29, 232
     local card, stroke = self:_CreateComponentBox(section, 36, "Dropdown")
 
     local title = make("TextLabel", {
-        Name = "Title", BackgroundTransparency = 1,
-        FontFace = Font.new("rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Medium, Enum.FontStyle.Normal),
+        Name = "Title", BackgroundTransparency = 1, FontFace = regularFont(Enum.FontWeight.Medium),
         Position = UDim2.fromOffset(12, 8), Size = UDim2.fromOffset(112, 20),
         Text = tostring(config.Title or config.Text or "Dropdown"),
         TextColor3 = Color3.fromRGB(190, 190, 190), TextSize = 14,
         TextTruncate = Enum.TextTruncate.AtEnd, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 7,
     }, card)
     local summary = make("TextLabel", {
-        Name = "Summary", BackgroundTransparency = 1,
-        FontFace = Font.new("rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
+        Name = "Summary", BackgroundTransparency = 1, FontFace = regularFont(),
         Position = UDim2.fromOffset(126, 8), Size = UDim2.fromOffset(132, 20),
         Text = "None", TextColor3 = Color3.fromRGB(122, 122, 122), TextSize = 12,
         TextTruncate = Enum.TextTruncate.AtEnd, TextXAlignment = Enum.TextXAlignment.Right, ZIndex = 7,
     }, card)
     local arrow = make("Frame", {
         Name = "Arrow", BackgroundTransparency = 1,
-        Position = UDim2.fromOffset(264, 11), Rotation = 0, Size = UDim2.fromOffset(14, 14), ZIndex = 7,
+        Position = UDim2.fromOffset(264, 11), Size = UDim2.fromOffset(14, 14), ZIndex = 7,
     }, card)
-    local arrowLeft = make("Frame", {
-        Name = "Left", AnchorPoint = Vector2.new(0.5, 0.5),
-        BackgroundColor3 = Color3.fromRGB(155, 155, 155), BorderSizePixel = 0,
-        Position = UDim2.fromScale(0.35, 0.5), Rotation = 45,
-        Size = UDim2.fromOffset(7, 2), ZIndex = 8,
-    }, arrow)
-    make("UICorner", {CornerRadius = UDim.new(1, 0)}, arrowLeft)
-    local arrowRight = make("Frame", {
-        Name = "Right", AnchorPoint = Vector2.new(0.5, 0.5),
-        BackgroundColor3 = Color3.fromRGB(155, 155, 155), BorderSizePixel = 0,
-        Position = UDim2.fromScale(0.65, 0.5), Rotation = -45,
-        Size = UDim2.fromOffset(7, 2), ZIndex = 8,
-    }, arrow)
-    make("UICorner", {CornerRadius = UDim.new(1, 0)}, arrowRight)
+    for _, spec in ipairs({{0.35, 45}, {0.65, -45}}) do
+        local bar = make("Frame", {
+            AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = Color3.fromRGB(155, 155, 155),
+            BorderSizePixel = 0, Position = UDim2.fromScale(spec[1], 0.5), Rotation = spec[2],
+            Size = UDim2.fromOffset(7, 2), ZIndex = 8,
+        }, arrow)
+        make("UICorner", {CornerRadius = UDim.new(1, 0)}, bar)
+    end
     local headerButton = make("TextButton", {
-        Name = "HeaderButton", Active = true, AutoButtonColor = false,
-        BackgroundTransparency = 1, BorderSizePixel = 0, Size = UDim2.fromScale(1, 1),
-        Text = "", ZIndex = 9,
+        Name = "HeaderButton", Active = true, AutoButtonColor = false, BackgroundTransparency = 1,
+        BorderSizePixel = 0, Size = UDim2.fromScale(1, 1), Text = "", ZIndex = 9,
     }, card)
 
     local popup = make("Frame", {
         Name = "DropdownPopup", Active = true, BackgroundColor3 = Color3.fromRGB(13, 13, 13),
         BackgroundTransparency = 1, BorderSizePixel = 0, ClipsDescendants = true,
-        Position = UDim2.fromOffset(0, 0), Size = UDim2.fromOffset(292, 0),
-        Visible = false, ZIndex = 100,
+        Size = UDim2.fromOffset(292, 0), Visible = false, ZIndex = 100,
     }, self.ScreenGui)
     make("UICorner", {CornerRadius = UDim.new(0, 7)}, popup)
     local popupStroke = make("UIStroke", {
@@ -2247,100 +2249,232 @@ function Library:CreateDropdown(section, config)
         Thickness = 1, Transparency = 1,
     }, popup)
     local popupShadow = make("UIShadow", {
-        Name = "UIShadow", BlurRadius = UDim.new(0, 18), Color = Color3.new(0, 0, 0),
-        Enabled = true, Inset = false, Mode = Enum.ApplyShadowMode.Shape,
-        Offset = UDim2.fromOffset(0, 2), ShowBehindParent = true,
-        Spread = UDim2.fromOffset(0, 0), Transparency = 1, ZIndex = -1,
+        Name = "UIShadow", BlurRadius = UDim.new(0, 18), Color = Color3.new(0, 0, 0), Enabled = true,
+        Inset = false, Mode = Enum.ApplyShadowMode.Shape, Offset = UDim2.fromOffset(0, 2),
+        ShowBehindParent = true, Spread = UDim2.fromOffset(0, 0), Transparency = 1, ZIndex = -1,
     }, popup)
+
+    local search = make("TextBox", {
+        Name = "Search", BackgroundColor3 = Color3.fromRGB(20, 20, 20), BackgroundTransparency = 0,
+        BorderSizePixel = 0, ClearTextOnFocus = false, FontFace = regularFont(),
+        PlaceholderColor3 = Color3.fromRGB(95, 95, 95), PlaceholderText = "Search...",
+        Position = UDim2.fromOffset(6, 6), Size = UDim2.fromOffset(280, 26), Text = "",
+        TextColor3 = Color3.fromRGB(200, 200, 200), TextSize = 13,
+        TextXAlignment = Enum.TextXAlignment.Left, Visible = false, ZIndex = 102,
+    }, popup)
+    make("UICorner", {CornerRadius = UDim.new(0, 6)}, search)
+    make("UIPadding", {PaddingLeft = UDim.new(0, 9), PaddingRight = UDim.new(0, 9)}, search)
+
+    local list = make("ScrollingFrame", {
+        Name = "Options", Active = true, AutomaticCanvasSize = Enum.AutomaticSize.Y,
+        BackgroundTransparency = 1, BorderSizePixel = 0, CanvasSize = UDim2.fromOffset(0, 0),
+        Position = UDim2.fromOffset(0, 0), Size = UDim2.new(1, 0, 1, 0),
+        ScrollBarImageColor3 = Color3.fromRGB(70, 70, 70), ScrollBarThickness = 3,
+        ScrollingDirection = Enum.ScrollingDirection.Y, ZIndex = 101,
+    }, popup)
+    make("UIListLayout", {Padding = UDim.new(0, 2), SortOrder = Enum.SortOrder.LayoutOrder}, list)
+    make("UIPadding", {
+        PaddingTop = UDim.new(0, 4), PaddingBottom = UDim.new(0, 4),
+        PaddingLeft = UDim.new(0, 6), PaddingRight = UDim.new(0, 6),
+    }, list)
 
     local component = {
         Card = card, Stroke = stroke, Title = title, ValueBox = summary, Arrow = arrow,
-        HeaderButton = headerButton, Popup = popup, PopupStroke = popupStroke,
-        PopupShadow = popupShadow, Section = section, Options = optionNames,
-        SelectedValue = nil, Entries = {}, Open = false, Callback = config.Callback, _popupGeneration = 0,
+        HeaderButton = headerButton, Popup = popup, PopupStroke = popupStroke, PopupShadow = popupShadow,
+        Section = section, Options = {}, Multi = multi, Entries = {}, Open = false,
+        Callback = config.Callback, Placeholder = config.Placeholder, _popupGeneration = 0,
     }
+    local selected = {}   -- ordered list of selected names
+    local lookup = {}     -- name -> true for current options
+    local popupHeight = 0
 
-    for index, name in ipairs(optionNames) do
-        local row = make("TextButton", {
-            Name = "Option", Active = true, AutoButtonColor = false,
-            BackgroundColor3 = Color3.fromRGB(26, 26, 26), BackgroundTransparency = 1,
-            BorderSizePixel = 0, Position = UDim2.fromOffset(6, 5 + (index - 1) * 29),
-            Size = UDim2.fromOffset(280, 27), Text = "", ZIndex = 101,
-        }, popup)
-        make("UICorner", {CornerRadius = UDim.new(0, 6)}, row)
-        local optionLabel = make("TextLabel", {
-            Name = "Label", BackgroundTransparency = 1,
-            FontFace = Font.new("rbxasset://fonts/families/Roboto.json", Enum.FontWeight.Regular, Enum.FontStyle.Normal),
-            Position = UDim2.fromOffset(10, 3), Size = UDim2.new(1, -20, 1, -6),
-            Text = name, TextColor3 = Color3.fromRGB(165, 165, 165),
-            TextSize = 13, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 102,
-        }, row)
-        component.Entries[name] = {Row = row, Label = optionLabel}
+    local function isSelected(name)
+        return table.find(selected, name) ~= nil
     end
 
-    function component:GetValue()
-        return self.SelectedValue
-    end
-
-    function component:GetValues()
-        return self.SelectedValue and {self.SelectedValue} or {}
+    local function paintRow(name)
+        local entry = component.Entries[name]
+        if not entry then return end
+        local chosen = isSelected(name)
+        tween(entry.Row, 0.16, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, {
+            BackgroundTransparency = chosen and 0.68 or 1,
+        })
+        tween(entry.Label, 0.16, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, {
+            TextColor3 = chosen and Color3.fromRGB(215, 215, 215) or Color3.fromRGB(160, 160, 160),
+        })
+        if entry.Check then
+            entry.Check.BackgroundTransparency = chosen and 0 or 1
+        end
     end
 
     local function updateSummary()
-        summary.Text = component.SelectedValue or "None"
+        if #selected == 0 then
+            summary.Text = tostring(component.Placeholder or "None")
+        else
+            summary.Text = table.concat(selected, ", ")
+        end
     end
 
-    function component:SetValue(name, silent)
-        name = tostring(name)
-        if not optionLookup[name] then return end
-        if self.SelectedValue == name then return end
+    local function currentValue()
+        if multi then return table.clone(selected) end
+        return selected[1]
+    end
 
-        local previous = self.SelectedValue
-        self.SelectedValue = name
-        if previous and self.Entries[previous] then
-            local oldEntry = self.Entries[previous]
-            tween(oldEntry.Row, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, {
-                BackgroundTransparency = 1,
-            })
-            tween(oldEntry.Label, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, {
-                TextColor3 = Color3.fromRGB(165, 165, 165),
-            })
-        end
-
-        local entry = self.Entries[name]
-        tween(entry.Row, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, {
-            BackgroundTransparency = 0.68,
-        })
-        tween(entry.Label, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, {
-            TextColor3 = Color3.fromRGB(210, 210, 210),
-        })
+    local function fire(silent)
         updateSummary()
-        if not silent and type(self.Callback) == "function" then
-            task.spawn(self.Callback, name)
+        if not silent and type(component.Callback) == "function" then
+            task.spawn(component.Callback, currentValue())
         end
     end
 
-    function component:SetValues(values, silent)
-        local value = values
-        if type(values) == "table" then
-            value = values[1]
+    local function applyFilter()
+        local query = string.lower(search.Text)
+        for name, entry in pairs(component.Entries) do
+            entry.Row.Visible = query == "" or string.find(string.lower(name), query, 1, true) ~= nil
         end
-        if value ~= nil and optionLookup[tostring(value)] then
-            self:SetValue(tostring(value), true)
+        list.CanvasPosition = Vector2.zero
+    end
+
+    local function layoutPopup()
+        local useSearch = #component.Options > 6
+        search.Visible = useSearch
+        local top = useSearch and 36 or 0
+        list.Position = UDim2.fromOffset(0, top)
+        list.Size = UDim2.new(1, 0, 1, -top)
+        popupHeight = math.min(#component.Options * (ROW) + 8, MAX_LIST) + top
+        if #component.Options == 0 then popupHeight = 34 end
+    end
+
+    local function rebuild(options)
+        for _, entry in pairs(component.Entries) do
+            entry.Row:Destroy()
         end
+        table.clear(component.Entries)
+        table.clear(lookup)
+        component.Options = {}
+        for _, option in ipairs(type(options) == "table" and options or {}) do
+            local name = tostring(option)
+            if not lookup[name] then
+                lookup[name] = true
+                table.insert(component.Options, name)
+            end
+        end
+        for index, name in ipairs(component.Options) do
+            local row = make("TextButton", {
+                Name = "Option", Active = true, AutoButtonColor = false,
+                BackgroundColor3 = Color3.fromRGB(26, 26, 26), BackgroundTransparency = 1,
+                BorderSizePixel = 0, LayoutOrder = index, Size = UDim2.new(1, -2, 0, 27),
+                Text = "", ZIndex = 102,
+            }, list)
+            make("UICorner", {CornerRadius = UDim.new(0, 6)}, row)
+            local label = make("TextLabel", {
+                Name = "Label", BackgroundTransparency = 1, FontFace = regularFont(),
+                Position = UDim2.fromOffset(multi and 28 or 10, 3), Size = UDim2.new(1, multi and -38 or -20, 1, -6),
+                Text = name, TextColor3 = Color3.fromRGB(160, 160, 160), TextSize = 13,
+                TextTruncate = Enum.TextTruncate.AtEnd, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 103,
+            }, row)
+            local check
+            if multi then
+                local box = make("Frame", {
+                    BackgroundTransparency = 1, Position = UDim2.fromOffset(9, 7),
+                    Size = UDim2.fromOffset(13, 13), ZIndex = 103,
+                }, row)
+                make("UICorner", {CornerRadius = UDim.new(0, 3)}, box)
+                make("UIStroke", {Color = Color3.fromRGB(90, 90, 90), Thickness = 1}, box)
+                check = make("Frame", {
+                    AnchorPoint = Vector2.new(0.5, 0.5), BackgroundColor3 = Color3.fromRGB(210, 210, 210),
+                    BackgroundTransparency = 1, BorderSizePixel = 0, Position = UDim2.fromScale(0.5, 0.5),
+                    Size = UDim2.fromOffset(7, 7), ZIndex = 104,
+                }, box)
+                make("UICorner", {CornerRadius = UDim.new(0, 2)}, check)
+            end
+            local entry = {Row = row, Label = label, Check = check}
+            component.Entries[name] = entry
+            table.insert(window._connections, row.Activated:Connect(function()
+                if multi then
+                    local position = table.find(selected, name)
+                    if position then table.remove(selected, position) else table.insert(selected, name) end
+                    paintRow(name)
+                    fire(false)
+                else
+                    if selected[1] == name then
+                        component:SetOpen(false)
+                        return
+                    end
+                    local previous = selected[1]
+                    selected[1] = name
+                    if previous then paintRow(previous) end
+                    paintRow(name)
+                    fire(false)
+                    component:SetOpen(false)
+                end
+            end))
+            table.insert(window._connections, row.MouseEnter:Connect(function()
+                if not isSelected(name) then
+                    tween(row, 0.12, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, {BackgroundTransparency = 0.86})
+                end
+            end))
+            table.insert(window._connections, row.MouseLeave:Connect(function()
+                tween(row, 0.14, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, {
+                    BackgroundTransparency = isSelected(name) and 0.68 or 1,
+                })
+            end))
+            paintRow(name)
+        end
+        layoutPopup()
+        applyFilter()
+    end
+
+    function component:GetValue()
+        return currentValue()
+    end
+    function component:GetValues()
+        return table.clone(selected)
+    end
+
+    function component:SetValue(value, silent)
+        local previous = table.clone(selected)
+        table.clear(selected)
+        if multi then
+            if type(value) == "table" then
+                for key, item in pairs(value) do
+                    local name = type(key) == "number" and tostring(item) or (item == true and tostring(key) or nil)
+                    if name and not table.find(selected, name) then table.insert(selected, name) end
+                end
+            elseif value ~= nil then
+                table.insert(selected, tostring(value))
+            end
+        elseif type(value) == "table" then
+            if value[1] ~= nil then selected[1] = tostring(value[1]) end
+        elseif value ~= nil then
+            selected[1] = tostring(value)
+        end
+        for _, name in ipairs(previous) do paintRow(name) end
+        for _, name in ipairs(selected) do paintRow(name) end
+        fire(silent)
+    end
+    component.SetValues = component.SetValue
+
+    function component:SetOptions(options)
+        rebuild(options)
+        -- keep only selections that still exist
+        for index = #selected, 1, -1 do
+            if not lookup[selected[index]] then table.remove(selected, index) end
+        end
+        for _, name in ipairs(selected) do paintRow(name) end
         updateSummary()
-        if not silent and type(self.Callback) == "function" then
-            task.spawn(self.Callback, self.SelectedValue)
+        if self.Open then
+            popup.Size = UDim2.fromOffset(292, popupHeight)
         end
     end
+    component.Refresh = component.SetOptions
 
     local function popupPosition(gap)
-        gap = gap or 6
         local absolute = card.AbsolutePosition
-        local y = absolute.Y + card.AbsoluteSize.Y + gap
+        local y = absolute.Y + card.AbsoluteSize.Y + (gap or 6)
         local camera = workspace.CurrentCamera
         local viewportHeight = camera and camera.ViewportSize.Y or 10000
-        if y + popupHeight > viewportHeight then y = absolute.Y - popupHeight - gap end
+        if y + popupHeight > viewportHeight then y = absolute.Y - popupHeight - (gap or 6) end
         return UDim2.fromOffset(absolute.X, y)
     end
 
@@ -2351,28 +2485,29 @@ function Library:CreateDropdown(section, config)
         self._popupGeneration += 1
         local generation = self._popupGeneration
         if open then
+            search.Text = ""
+            applyFilter()
             popup.Visible = true
             popup.Position = popupPosition(2)
             popup.Size = UDim2.fromOffset(292, 0)
             popup.BackgroundTransparency = 1
-            popupStroke.Transparency = 1
-            popupShadow.Transparency = 1
-            tween(popup, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {
+            tween(popup, 0.28, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {
                 Position = popupPosition(6), Size = UDim2.fromOffset(292, popupHeight), BackgroundTransparency = 0,
             })
-            tween(popupStroke, 0.25, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, {Transparency = 0.55})
-            tween(popupShadow, 0.3, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, {Transparency = 0.5})
-            tween(arrow, 0.3, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {Rotation = 180})
+            tween(popupStroke, 0.24, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, {Transparency = 0.55})
+            tween(popupShadow, 0.28, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, {Transparency = 0.5})
+            tween(arrow, 0.28, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {Rotation = 180})
             return
         end
-        tween(popup, 0.24, Enum.EasingStyle.Quint, Enum.EasingDirection.In, {
+        search:ReleaseFocus()
+        tween(popup, 0.22, Enum.EasingStyle.Quint, Enum.EasingDirection.In, {
             Position = popupPosition(2), Size = UDim2.fromOffset(292, 0), BackgroundTransparency = 1,
         })
         tween(popupStroke, 0.18, Enum.EasingStyle.Sine, Enum.EasingDirection.In, {Transparency = 1})
         tween(popupShadow, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.In, {Transparency = 1})
-        tween(arrow, 0.26, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {Rotation = 0})
-        task.delay(0.25, function()
-            if not self._destroyed and component._popupGeneration == generation and not component.Open then
+        tween(arrow, 0.24, Enum.EasingStyle.Quint, Enum.EasingDirection.Out, {Rotation = 0})
+        task.delay(0.24, function()
+            if not window._destroyed and component._popupGeneration == generation and not component.Open then
                 popup.Visible = false
             end
         end)
@@ -2384,39 +2519,16 @@ function Library:CreateDropdown(section, config)
             and point.Y >= position.Y and point.Y <= position.Y + size.Y
     end
 
+    table.insert(self._connections, search:GetPropertyChangedSignal("Text"):Connect(applyFilter))
     table.insert(self._connections, headerButton.Activated:Connect(function()
         component:SetOpen(not component.Open)
     end))
     table.insert(self._connections, headerButton.MouseEnter:Connect(function()
-        tween(card, 0.18, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, {
-            BackgroundColor3 = Color3.fromRGB(17, 17, 17),
-        })
+        tween(card, 0.18, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, {BackgroundColor3 = Color3.fromRGB(17, 17, 17)})
     end))
     table.insert(self._connections, headerButton.MouseLeave:Connect(function()
-        tween(card, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, {
-            BackgroundColor3 = Color3.fromRGB(13, 13, 13),
-        })
+        tween(card, 0.2, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, {BackgroundColor3 = Color3.fromRGB(13, 13, 13)})
     end))
-
-    for name, entry in pairs(component.Entries) do
-        local optionName, optionEntry = name, entry
-        table.insert(self._connections, optionEntry.Row.Activated:Connect(function()
-            component:SetValue(optionName)
-        end))
-        table.insert(self._connections, optionEntry.Row.MouseEnter:Connect(function()
-            if component.SelectedValue ~= optionName then
-                tween(optionEntry.Row, 0.15, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, {
-                    BackgroundTransparency = 0.86,
-                })
-            end
-        end))
-        table.insert(self._connections, optionEntry.Row.MouseLeave:Connect(function()
-            tween(optionEntry.Row, 0.18, Enum.EasingStyle.Sine, Enum.EasingDirection.Out, {
-                BackgroundTransparency = component.SelectedValue == optionName and 0.68 or 1,
-            })
-        end))
-    end
-
     table.insert(self._connections, UserInputService.InputBegan:Connect(function(input)
         if not component.Open then return end
         if input.UserInputType ~= Enum.UserInputType.MouseButton1
@@ -2429,7 +2541,171 @@ function Library:CreateDropdown(section, config)
     end))
 
     table.insert(section.Components, component)
-    component:SetValues(config.Default, true)
+    rebuild(config.Options)
+    component:SetValue(config.Default, true)
+    return component
+end
+
+function Library:CreateMultiDropdown(section, config)
+    config = table.clone(config or {})
+    config.Multi = true
+    return self:CreateDropdown(section, config)
+end
+
+function Library:CreateParagraph(section, config)
+    assert(type(section) == "table" and section.Container, "CreateParagraph expects a section component")
+    config = config or {}
+    local card, stroke = self:_CreateComponentBox(section, 36, "Paragraph")
+    local titleText = tostring(config.Title or config.Name or "")
+    local title = make("TextLabel", {
+        Name = "Title", BackgroundTransparency = 1, FontFace = regularFont(Enum.FontWeight.Medium),
+        Position = UDim2.fromOffset(12, 8), Size = UDim2.fromOffset(268, 18), Text = titleText,
+        TextColor3 = Color3.fromRGB(190, 190, 190), TextSize = 14,
+        TextTruncate = Enum.TextTruncate.AtEnd, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 6,
+    }, card)
+    local body = make("TextLabel", {
+        Name = "Description", BackgroundTransparency = 1, FontFace = regularFont(),
+        Position = UDim2.fromOffset(12, 28), Size = UDim2.fromOffset(268, 16),
+        Text = tostring(config.Description or config.Content or config.Text or ""),
+        TextColor3 = Color3.fromRGB(135, 135, 135), TextSize = 13, TextWrapped = true,
+        TextXAlignment = Enum.TextXAlignment.Left, TextYAlignment = Enum.TextYAlignment.Top, ZIndex = 6,
+    }, card)
+    local component = {Card = card, Stroke = stroke, Title = title, ValueBox = body, Section = section, NoBox = false}
+    local window = self
+
+    local function resize()
+        local hasTitle = title.Text ~= ""
+        title.Visible = hasTitle
+        local top = hasTitle and 28 or 9
+        body.Position = UDim2.fromOffset(12, top)
+        local bounds = TextService:GetTextSize(body.Text, 13, Enum.Font.Roboto, Vector2.new(262, 10000))
+        local textHeight = body.Text == "" and 0 or math.ceil(bounds.Y) + 2
+        body.Size = UDim2.fromOffset(268, textHeight)
+        window:_ResizeComponent(section, card, math.max(36, top + textHeight + 9))
+    end
+
+    function component:SetDescription(text)
+        body.Text = tostring(text or "")
+        resize()
+    end
+    function component:SetTitle(text)
+        title.Text = tostring(text or "")
+        resize()
+    end
+    function component:GetValue()
+        return body.Text
+    end
+    component.SetValue = component.SetDescription
+
+    table.insert(section.Components, component)
+    resize()
+    return component
+end
+
+function Library:CreateKeybind(section, config)
+    assert(type(section) == "table" and section.Container, "CreateKeybind expects a section component")
+    config = config or {}
+    local card, stroke = self:_CreateComponentBox(section, 36, "Keybind")
+    local title = make("TextLabel", {
+        Name = "Title", BackgroundTransparency = 1, FontFace = regularFont(Enum.FontWeight.Medium),
+        Position = UDim2.fromOffset(12, 8), Size = UDim2.fromOffset(170, 20),
+        Text = tostring(config.Title or config.Name or "Keybind"),
+        TextColor3 = Color3.fromRGB(190, 190, 190), TextSize = 14,
+        TextTruncate = Enum.TextTruncate.AtEnd, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 6,
+    }, card)
+    local keyButton = make("TextButton", {
+        Name = "Key", AnchorPoint = Vector2.new(1, 0.5), AutoButtonColor = false,
+        BackgroundColor3 = Color3.fromRGB(22, 22, 22), BorderSizePixel = 0, FontFace = regularFont(Enum.FontWeight.Medium),
+        Position = UDim2.new(1, -10, 0.5, 0), Size = UDim2.fromOffset(92, 24), Text = "None",
+        TextColor3 = Color3.fromRGB(170, 170, 170), TextSize = 12, TextTruncate = Enum.TextTruncate.AtEnd, ZIndex = 8,
+    }, card)
+    make("UICorner", {CornerRadius = UDim.new(0, 6)}, keyButton)
+
+    local component = {Card = card, Stroke = stroke, Title = title, ValueBox = keyButton, Section = section,
+        Value = nil, Callback = config.Callback, OnPressed = config.OnPressed}
+    local capturing = false
+
+    function component:SetValue(value, silent)
+        local name = typeof(value) == "EnumItem" and value.Name or (value ~= nil and tostring(value) or nil)
+        if name then
+            local ok, key = pcall(function() return Enum.KeyCode[name] end)
+            if not ok or not key then return end
+        end
+        self.Value = name
+        keyButton.Text = name or "None"
+        if not silent and type(self.Callback) == "function" then task.spawn(self.Callback, name) end
+    end
+    function component:GetValue()
+        return self.Value
+    end
+
+    table.insert(self._connections, keyButton.Activated:Connect(function()
+        capturing = not capturing
+        keyButton.Text = capturing and "..." or (component.Value or "None")
+    end))
+    table.insert(self._connections, UserInputService.InputBegan:Connect(function(input, processed)
+        if input.UserInputType ~= Enum.UserInputType.Keyboard then return end
+        if capturing then
+            capturing = false
+            if input.KeyCode == Enum.KeyCode.Escape then
+                keyButton.Text = component.Value or "None"
+            else
+                component:SetValue(input.KeyCode)
+            end
+            return
+        end
+        if processed or UserInputService:GetFocusedTextBox() then return end
+        if component.Value and input.KeyCode.Name == component.Value and type(component.OnPressed) == "function" then
+            task.spawn(component.OnPressed)
+        end
+    end))
+
+    table.insert(section.Components, component)
+    component:SetValue(config.Default, true)
+    return component
+end
+
+function Library:CreateColorPicker(section, config)
+    assert(type(section) == "table" and section.Container, "CreateColorPicker expects a section component")
+    config = config or {}
+    local palette = {
+        Color3.fromRGB(255, 255, 255), Color3.fromRGB(237, 66, 69), Color3.fromRGB(250, 166, 26),
+        Color3.fromRGB(254, 231, 92), Color3.fromRGB(87, 242, 135), Color3.fromRGB(88, 101, 242),
+        Color3.fromRGB(235, 69, 158), Color3.fromRGB(0, 0, 0),
+    }
+    local card, stroke = self:_CreateComponentBox(section, 36, "ColorPicker")
+    local title = make("TextLabel", {
+        Name = "Title", BackgroundTransparency = 1, FontFace = regularFont(Enum.FontWeight.Medium),
+        Position = UDim2.fromOffset(12, 8), Size = UDim2.fromOffset(200, 20),
+        Text = tostring(config.Title or config.Name or "Color"),
+        TextColor3 = Color3.fromRGB(190, 190, 190), TextSize = 14,
+        TextTruncate = Enum.TextTruncate.AtEnd, TextXAlignment = Enum.TextXAlignment.Left, ZIndex = 6,
+    }, card)
+    local swatch = make("TextButton", {
+        Name = "Swatch", AnchorPoint = Vector2.new(1, 0.5), AutoButtonColor = false, BorderSizePixel = 0,
+        Position = UDim2.new(1, -12, 0.5, 0), Size = UDim2.fromOffset(38, 20), Text = "", ZIndex = 8,
+    }, card)
+    make("UICorner", {CornerRadius = UDim.new(0, 5)}, swatch)
+    make("UIStroke", {Color = Color3.fromRGB(60, 60, 60), Thickness = 1}, swatch)
+    local component = {Card = card, Stroke = stroke, Title = title, Section = section, Callback = config.Callback}
+    local index = 1
+
+    function component:SetValue(color, silent)
+        if typeof(color) ~= "Color3" then return end
+        self.Value = color
+        swatch.BackgroundColor3 = color
+        if not silent and type(self.Callback) == "function" then task.spawn(self.Callback, color) end
+    end
+    function component:GetValue()
+        return self.Value
+    end
+    table.insert(self._connections, swatch.Activated:Connect(function()
+        index = index % #palette + 1
+        component:SetValue(palette[index])
+    end))
+
+    table.insert(section.Components, component)
+    component:SetValue(typeof(config.Default) == "Color3" and config.Default or palette[1], true)
     return component
 end
 
