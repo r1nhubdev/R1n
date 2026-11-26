@@ -1,10 +1,17 @@
-local Players = game:GetService("Players")
 if not game:IsLoaded() then game.Loaded:Wait() end
 
-local SCRIPTS = { -- checked in this order: a premium key always loads premium
-    {Name = "Premium", Id = "cd4b1fa92b25e702bb3a6cccb98aa9be"},
-    {Name = "Free", Id = "07f307fb9f2cbdfd152567dc3b56fcdf"},
+local GAMES = {
+    {
+        Name = "Vox Seas",
+        GameIds = {9271746647},
+        PlaceIds = {123974602339071, 87239675122205},
+        Scripts = {
+            {Name = "Premium", Id = "cd4b1fa92b25e702bb3a6cccb98aa9be"},
+            {Name = "Free", Id = "07f307fb9f2cbdfd152567dc3b56fcdf"},
+        },
+    },
 }
+
 local KEY_FOLDER = "LowyxHub"
 local KEY_FILE = KEY_FOLDER .. "/key.txt"
 local GET_KEY_URL = "https://discord.gg/lowyx"
@@ -16,7 +23,7 @@ local MESSAGES = {
     KEY_INVALID = "Enter a valid key.",
     KEY_EXPIRED = "Your key has expired. Get a new one.",
     KEY_BANNED = "This key is banned.",
-    KEY_HWID_LOCKED = "This key is linked to another device. Reset your HWID in our Discord.",
+    KEY_HWID_LOCKED = "This key is linked to another device. Use /resethwid in our Discord.",
     INVALID_EXECUTOR = "Your executor is not supported.",
     TIME_ERROR = "Your system clock is wrong. Sync it and try again.",
 }
@@ -29,15 +36,19 @@ local function fetch(url)
     return game:HttpGet(url)
 end
 
-local luarmor = loadstring(fetch(LUARMOR_URL))()
+local function currentGame()
+    for _, entry in ipairs(GAMES) do
+        if table.find(entry.GameIds, game.GameId) or table.find(entry.PlaceIds, game.PlaceId) then
+            return entry
+        end
+    end
+end
 
--- key file ------------------------------------------------------------------
 local function readKey()
     local ok, key = pcall(function()
         return isfile(KEY_FILE) and readfile(KEY_FILE) or nil
     end)
-    key = ok and type(key) == "string" and key:match("^%s*(%S+)%s*$") or nil
-    return key
+    return ok and type(key) == "string" and key:match("^%s*(%S+)%s*$") or nil
 end
 
 local function saveKey(key)
@@ -53,18 +64,18 @@ local function forgetKey()
     end)
 end
 
--- validation ----------------------------------------------------------------
--- Returns the script the key unlocks, or nil plus the most useful status.
+local supported = currentGame()
+local luarmor = loadstring(fetch(LUARMOR_URL))()
+
 local function validate(key)
     key = tostring(key or ""):match("^%s*(.-)%s*$")
     if key == "" then return nil, {code = "KEY_INVALID"} end
     local best
-    for _, script in ipairs(SCRIPTS) do
+    for _, script in ipairs(supported.Scripts) do
         luarmor.script_id = script.Id
         local ok, status = pcall(luarmor.check_key, key)
         if ok and type(status) == "table" then
             if status.code == "KEY_VALID" then return script, status end
-            -- prefer a specific reason (expired, banned, hwid) over "does not exist"
             if not best or best.code == "KEY_INCORRECT" then best = status end
         elseif not best then
             best = {code = "UNKNOWN_ERROR", message = tostring(status)}
@@ -85,32 +96,37 @@ local function run(script, key)
     luarmor.load_script()
 end
 
--- saved key: skip the UI when it is still valid ------------------------------
-local savedKey = readKey()
 local savedMessage
-if savedKey then
-    local script, status = validate(savedKey)
-    if script then
-        run(script, savedKey)
-        return
+if supported then
+    local savedKey = readKey()
+    if savedKey then
+        local script, status = validate(savedKey)
+        if script then
+            run(script, savedKey)
+            return
+        end
+        forgetKey()
+        savedMessage = "Your saved key is no longer valid: " .. describe(status)
     end
-    forgetKey()
-    savedMessage = "Your saved key is no longer valid: " .. describe(status)
 end
 
--- access UI -----------------------------------------------------------------
 local UI = loadstring(fetch(INTERFACE_URL), "@LowyxInterface")()
-UI:CreateWindow({Title = "Lowyx Hub", Description = "Vox Seas"})
+UI:CreateWindow({Title = "Lowyx Hub", Description = supported and supported.Name or "Unsupported game"})
 
 local tab = UI:AddTab({Id = "Access", Name = "Access", Icon = "info"})
 local section = tab:AddSection({Id = "Key", Name = "Key System", Column = 1})
 local keyInput = section:AddInput({Id = "Key", Name = "Key", Placeholder = "Paste your key..."})
 local status = section:AddParagraph({Id = "Status", Name = "Status",
-    Description = savedMessage or "Enter your key and press Verify."})
+    Description = not supported and "This game is not supported yet."
+        or savedMessage or "Enter your key and press Verify."})
 
 local busy = false
 section:AddButton({Id = "Verify", Name = "Verify", Callback = function()
     if busy then return end
+    if not supported then
+        status:SetDescription("This game is not supported yet.")
+        return
+    end
     busy = true
     local key = tostring(keyInput:Get() or ""):match("^%s*(.-)%s*$")
     status:SetDescription("Verifying...")

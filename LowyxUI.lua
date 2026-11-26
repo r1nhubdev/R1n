@@ -1271,7 +1271,6 @@ function Library:CreateTab(config)
         if self._destroyed or not icon.Parent or not label.Parent then
             return
         end
-        -- tabs can be reordered after creation, so read the current row
         finalIconPosition = UDim2.fromOffset(17, 86 + component.RowOffset)
         finalLabelPosition = UDim2.fromOffset(47, 87 + component.RowOffset)
 
@@ -2284,8 +2283,8 @@ function Library:CreateDropdown(section, config)
         Section = section, Options = {}, Multi = multi, Entries = {}, Open = false,
         Callback = config.Callback, Placeholder = config.Placeholder, _popupGeneration = 0,
     }
-    local selected = {}   -- ordered list of selected names
-    local lookup = {}     -- name -> true for current options
+    local selected = {}
+    local lookup = {}
     local popupHeight = 0
 
     local function isSelected(name)
@@ -2457,7 +2456,6 @@ function Library:CreateDropdown(section, config)
 
     function component:SetOptions(options)
         rebuild(options)
-        -- keep only selections that still exist
         for index = #selected, 1, -1 do
             if not lookup[selected[index]] then table.remove(selected, index) end
         end
