@@ -1431,7 +1431,8 @@ function Library:CreateSection(tab, config)
     table.insert(tab.Sections, component)
 
     local window = self
-    for _, kind in ipairs({"Toggle", "Slider", "Input", "Button", "Comment", "LargeText", "Dropdown"}) do
+    for _, kind in ipairs({"Toggle", "Slider", "Input", "Button", "Comment", "LargeText", "Dropdown",
+        "MultiDropdown", "Paragraph", "Keybind", "ColorPicker"}) do
         component["Create" .. kind] = function(sectionSelf, componentConfig)
             return window["Create" .. kind](window, sectionSelf, componentConfig)
         end
