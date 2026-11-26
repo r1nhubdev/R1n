@@ -477,9 +477,8 @@ function Library.new(config)
     local function fitScale()
         local camera = workspace.CurrentCamera
         local viewport = camera and camera.ViewportSize or Vector2.new(1920, 1080)
-        local preferred = viewport.Y / 1000
-        local fits = math.min((viewport.X - 24) / 782, (viewport.Y - 24) / 511)
-        return math.clamp(math.min(preferred, fits), 0.6, 1.3)
+        local fits = math.min(viewport.X * 0.9 / 782, viewport.Y * 0.85 / 511)
+        return math.clamp(fits, 0.6, 2)
     end
     self.Scale = fitScale()
     self._scaled = {}
