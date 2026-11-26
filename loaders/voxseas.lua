@@ -1,7 +1,3 @@
--- Lowyx Hub | Vox Seas loader
--- Validates a Luarmor key against the Premium and Free scripts, runs the one it unlocks
--- and remembers the key for the next execution.
-
 local Players = game:GetService("Players")
 if not game:IsLoaded() then game.Loaded:Wait() end
 
