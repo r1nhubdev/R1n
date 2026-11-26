@@ -754,6 +754,10 @@ function Library.new(config)
     return self
 end
 
+function Library:CreateWindow(config)
+    return Library.new(config)
+end
+
 function Library:SetMiniMenu(open)
     if self._destroyed or self.MiniMenuOpen == open then
         return
@@ -1247,6 +1251,18 @@ function Library:CreateTab(config)
     end))
     table.insert(self.Tabs, component)
 
+    local window = self
+    function component:CreateSection(sectionConfig)
+        return window:CreateSection(self, sectionConfig)
+    end
+    if #self.Tabs == 1 then
+        task.defer(function()
+            if not window._destroyed and not window.SelectedTab then
+                window:SelectTab(component, true)
+            end
+        end)
+    end
+
     local entranceDelay = 0.72 + (self._tabCount - 1) * 0.085
     task.delay(entranceDelay, function()
         if self._destroyed or not icon.Parent or not label.Parent then
@@ -1365,6 +1381,13 @@ function Library:CreateSection(tab, config)
         Components = {},
     }
     table.insert(tab.Sections, component)
+
+    local window = self
+    for _, kind in ipairs({"Toggle", "Slider", "Input", "Button", "Comment", "LargeText", "Dropdown"}) do
+        component["Create" .. kind] = function(sectionSelf, componentConfig)
+            return window["Create" .. kind](window, sectionSelf, componentConfig)
+        end
+    end
     return component
 end
 
@@ -2746,107 +2769,6 @@ function Library:Destroy()
     end
 end
 
-local UI_CONFIG = getgenv().LowyxUIOptions or {
-    Title = "Lowyx Project",
-    SearchPlaceholder = "Search",
-    DiscordLink = "discord.gg/lowyx",
-    FloatingPosition = UDim2.new(0, 18, 0.5, 0),
-
-    -- Altere este número para escolher quantas sections cada tab terá.
-    SectionCount = 6,
-
-    -- Side pode ser "Left", "Right" ou "Alternate".
-    SectionTemplate = {
-        Title = "Section {i}",
-        Side = "Alternate",
-        Components = {
-            {
-                Type = "Toggle",
-                Title = "Toggle {i}",
-                Default = false,
-            },
-            {
-                Type = "Slider",
-                Title = "Slider {i}",
-                Min = 0,
-                Max = 100,
-                Increment = 1,
-                Default = 50,
-            },
-            {
-                Type = "Input",
-                Name = "Input {i}",
-                Placeholder = "Type here...",
-            },
-            {
-                Type = "Button",
-                Name = "Button {i}",
-            },
-            {
-                Type = "Comment",
-                Text = "Comment {i}",
-            },
-            {
-                Type = "LargeText",
-                Text = "This long text wraps and expands its box downward automatically.",
-            },
-            {
-                Type = "Dropdown",
-                Title = "Dropdown {i}",
-                Options = {"Option 1", "Option 2", "Option 3", "Option 4"},
-                Default = {},
-            },
-        },
-    },
-
-    -- Adicione, remova ou reordene entradas para controlar todas as tabs.
-    Tabs = {
-        {
-            Icon = "rbxassetid://107271966094468",
-            Title = "Tab",
-            Description = "Farming",
-        },
-        {
-            Icon = "rbxassetid://10747373176",
-            Title = "Tab",
-            Description = "Player",
-        },
-        {
-            Icon = "rbxassetid://10723346959",
-            Title = "Tab",
-            Description = "Visuals",
-        },
-        {
-            Icon = "rbxassetid://10723424505",
-            Title = "Tab",
-            Description = "Misc",
-        },
-        {
-            Icon = "rbxassetid://10734950309",
-            Title = "Tab",
-            Description = "Settings",
-        },
-    },
-}
-
-local controller = Library.new(UI_CONFIG)
-controller:Build(UI_CONFIG)
-
 getgenv().LowyxUILibrary = Library
-getgenv().LowyxUI = controller
-getgenv().LowyxUIConfig = UI_CONFIG
 
-if type(STATE) == "table" and type(STATE.onCleanup) == "function" then
-    STATE.onCleanup(function()
-        if controller then
-            controller:Destroy()
-        end
-        if getgenv().LowyxUI == controller then
-            getgenv().LowyxUI = nil
-            getgenv().LowyxUILibrary = nil
-            getgenv().LowyxUIConfig = nil
-        end
-    end)
-end
-
-return "Lowyx UI loaded"
+return Library
