@@ -3,8 +3,8 @@ if not game:IsLoaded() then game.Loaded:Wait() end
 local GAMES = {
     {
         Name = "Vox Seas",
-        GameIds = {9271746647},
-        PlaceIds = {123974602339071, 87239675122205},
+        GameIds = {7174773198, 9271746647},
+        PlaceIds = {104067066727140, 75378822052755, 133155692415120, 123974602339071, 87239675122205},
         Scripts = {
             {Name = "Premium", Id = "cd4b1fa92b25e702bb3a6cccb98aa9be"},
             {Name = "Free", Id = "07f307fb9f2cbdfd152567dc3b56fcdf"},
