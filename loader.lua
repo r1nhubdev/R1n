@@ -15,7 +15,7 @@ local GAMES = {
 local KEY_FOLDER = "LowyxHub"
 local KEY_FILE = KEY_FOLDER .. "/key.txt"
 local GET_KEY_URL = "https://discord.gg/lowyx"
-local INTERFACE_URL = "https://raw.githubusercontent.com/r1nhubdev/R1n/refs/heads/main/LowyxInterface.lua"
+local INTERFACE_URL = "https://raw.githubusercontent.com/r1nhubdev/R1n/refs/heads/main/LowyxInterface.lua?v=" .. os.time()
 local LUARMOR_URL = "https://sdkapi-public.luarmor.net/library.lua"
 
 local MESSAGES = {
