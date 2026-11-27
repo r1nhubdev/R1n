@@ -10,6 +10,15 @@ local GAMES = {
             {Name = "Free", Id = "07f307fb9f2cbdfd152567dc3b56fcdf"},
         },
     },
+    {
+        Name = "Rivals",
+        GameIds = {6035872082},
+        PlaceIds = {17625359962, 18126510175, 71874690745115, 117398147513099, 129604661913557, 133215910299950},
+        Scripts = {
+            {Name = "Premium", Id = "959ac0ba60d9a36d98d010ca13e811a7"},
+            {Name = "Free", Id = "6fd13893ee99d4982d449039af7c5846"},
+        },
+    },
 }
 
 local KEY_FOLDER = "LowyxHub"
