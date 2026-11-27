@@ -214,12 +214,13 @@ function Library.new(config)
             Enum.FontWeight.Medium,
             Enum.FontStyle.Normal
         ),
-        Position = UDim2.new(0.0127877239, 0, 0.174641252, 0),
-        Size = UDim2.fromOffset(113, 24),
+        Position = UDim2.fromOffset(16, 7),
+        Size = UDim2.fromOffset(560, 24),
         Text = tostring(config.Title or "Lowyx Project"),
         TextColor3 = COLORS.Title,
         TextSize = 18,
-        TextXAlignment = Enum.TextXAlignment.Center,
+        TextTruncate = Enum.TextTruncate.AtEnd,
+        TextXAlignment = Enum.TextXAlignment.Left,
         ZIndex = 3,
     }, topbar)
 
